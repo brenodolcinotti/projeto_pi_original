@@ -57,3 +57,25 @@
             </div>
         </div>
     </section>
+
+    <script>
+        function selectUser(selectedUserType) {
+            localStorage.setItem('selectedUserType', selectedUserType);
+            console.log('Tipo de usuário selecionado:', selectedUserType);
+            window.location.href = 'login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            localStorage.removeItem('loggedIn');
+            localStorage.removeItem('userType');
+            
+            document.querySelectorAll('.user-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const selectedUserType = this.getAttribute('data-user');
+                    selectUser(selectedUserType);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
