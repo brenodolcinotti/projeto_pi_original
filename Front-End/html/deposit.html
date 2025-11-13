@@ -531,14 +531,6 @@
                 </div>
 
                 <div class="employee-controls">
-                    <button class="employee-control-btn active" id="employee-btn-solicitacoes">
-                        <i class="fas fa-clipboard-list"></i>
-                        Minhas Solicitações
-                    </button>
-                    <button class="employee-control-btn" id="employee-btn-estoque">
-                        <i class="fas fa-boxes"></i>
-                        Consultar Estoque
-                    </button>
                     <button class="employee-control-btn" id="employee-btn-movimentacao">
                         <i class="fas fa-exchange-alt"></i>
                         Movimentação
@@ -547,10 +539,10 @@
                         <i class="fas fa-tools"></i>
                         Manutenção
                     </button>
-                    <button class="employee-control-btn" id="employee-btn-nova-solicitacao">
+                   <!--<button class="employee-control-btn" id="employee-btn-nova-solicitacao">
                         <i class="fas fa-plus-circle"></i>
                         Nova Solicitação
-                    </button>
+                    </button>--> 
                 </div>
 
                 <!-- Seção de Solicitações do Funcionário -->
@@ -1325,13 +1317,6 @@
 
         function setupEmployeeEventListeners() {
             // Controles do dashboard do funcionário
-            document.getElementById('employee-btn-solicitacoes').addEventListener('click', function() {
-                switchEmployeeSection('solicitacoes');
-            });
-
-            document.getElementById('employee-btn-estoque').addEventListener('click', function() {
-                switchEmployeeSection('estoque');
-            });
 
             document.getElementById('employee-btn-movimentacao').addEventListener('click', function() {
                 switchEmployeeSection('movimentacao');
@@ -1339,10 +1324,6 @@
 
             document.getElementById('employee-btn-manutencao').addEventListener('click', function() {
                 switchEmployeeSection('manutencao');
-            });
-
-            document.getElementById('employee-btn-nova-solicitacao').addEventListener('click', function() {
-                switchEmployeeSection('nova-solicitacao');
             });
 
             // Botões de transação do funcionário
