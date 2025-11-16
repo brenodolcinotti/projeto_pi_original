@@ -8,8 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-    </head>
+</head>
 <body>
     <header id="main-header">
         <div class="container">
@@ -52,18 +51,7 @@
                         <i class="fas fa-chart-line"></i>
                         Movimentações
                     </button>
-                    <button class="control-btn" id="btn-estoque">
-                        <i class="fas fa-boxes"></i>
-                        Estoque
-                    </button>
-                    <button class="control-btn" id="btn-entrada-materiais">
-                        <i class="fas fa-arrow-down"></i>
-                        Entrada de Materiais
-                    </button>
-                    <button class="control-btn" id="btn-manutencao">
-                        <i class="fas fa-tools"></i>
-                        Manutenção
-                    </button>
+                    <!-- Botões removidos conforme solicitado -->
                 </div>
 
                 <!-- Seção de Movimentações -->
@@ -170,355 +158,7 @@
                     </div>
                 </div>
 
-                <!-- Seção de Estoque -->
-                <div class="section" id="section-estoque">
-                    <div class="card manager-card">
-                        <h2 class="card-title manager-title">Controle de Estoque</h2>
-                        
-                        <div class="inventory-grid">
-                            <div class="inventory-item">
-                                <div class="inventory-header">
-                                    <div class="inventory-icon">
-                                        <i class="fas fa-tools"></i>
-                                    </div>
-                                </div>
-                                <div class="inventory-value">850</div>
-                                <div class="inventory-label">Ferramentas em Estoque</div>
-                                <div class="stock-level">
-                                    <div class="stock-level-fill stock-high" style="width: 85%"></div>
-                                </div>
-                                <div class="quick-actions">
-                                    <button class="quick-action-btn" onclick="alert('Relatório de Ferramentas gerado!')">
-                                        <i class="fas fa-chart-bar"></i> Relatório
-                                    </button>
-                                    <button class="quick-action-btn" onclick="alert('Ajuste de estoque aberto!')">
-                                        <i class="fas fa-edit"></i> Ajustar
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="inventory-item">
-                                <div class="inventory-header">
-                                    <div class="inventory-icon">
-                                        <i class="fas fa-microchip"></i>
-                                    </div>
-                                </div>
-                                <div class="inventory-value">45</div>
-                                <div class="inventory-label">Componentes Eletrônicos</div>
-                                <div class="stock-level">
-                                    <div class="stock-level-fill stock-low" style="width: 15%"></div>
-                                </div>
-                                <div class="quick-actions">
-                                    <button class="quick-action-btn" onclick="alert('Pedido de compra realizado!')">
-                                        <i class="fas fa-shopping-cart"></i> Comprar
-                                    </button>
-                                    <button class="quick-action-btn" onclick="alert('Alerta configurado!')">
-                                        <i class="fas fa-bell"></i> Alertar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card manager-card">
-                            <h3 class="chart-title">Itens com Estoque Baixo</h3>
-                            <table class="advanced-table">
-                                <thead>
-                                    <tr>
-                                        <th>Item</th>
-                                        <th>Estoque Atual</th>
-                                        <th>Mínimo</th>
-                                        <th>Status</th>
-                                        <th>Ação</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Componentes Eletrônicos</td>
-                                        <td>45</td>
-                                        <td>100</td>
-                                        <td><span class="badge badge-danger">Crítico</span></td>
-                                        <td><button class="btn btn-warning">Comprar</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Cabos USB</td>
-                                        <td>28</td>
-                                        <td>50</td>
-                                        <td><span class="badge badge-warning">Atenção</span></td>
-                                        <td><button class="btn btn-secondary">Monitorar</button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Seção de Entrada de Materiais -->
-                <div class="section" id="section-entrada-materiais">
-                    <div class="card manager-card">
-                        <h2 class="card-title manager-title">Entrada de Materiais</h2>
-                        
-                        <div class="transaction-type">
-                            <button class="btn active" id="manager-deposit-btn">
-                                <i class="fas fa-boxes"></i>
-                                <span>Entrada de Material</span>
-                            </button>
-                            <button class="btn btn-secondary" id="manager-withdrawal-btn">
-                                <i class="fas fa-dolly"></i>
-                                <span>Retirada de Material</span>
-                            </button>
-                        </div>
-                        
-                        <form id="manager-transaction-form">
-                            <div class="transaction-form">
-                                <div class="form-group">
-                                    <label for="manager-material">Material</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-box"></i>
-                                        <select id="manager-material" required>
-                                            <option value="">Selecione um material</option>
-                                            <option value="ferramentas">Ferramentas</option>
-                                            <option value="eletronicos">Componentes Eletrônicos</option>
-                                            <option value="materiais-escritorio">Materiais de Escritório</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="manager-quantity">Quantidade</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-hashtag"></i>
-                                        <input type="number" id="manager-quantity" min="1" placeholder="Digite a quantidade" required>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="manager-location">Localização</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-map-marker-alt"></i>
-                                        <select id="manager-location" required>
-                                            <option value="">Selecione uma localização</option>
-                                            <option value="almoxarifado-a">Almoxarifado A</option>
-                                            <option value="almoxarifado-b">Almoxarifado B</option>
-                                            <option value="setor-producao">Setor de Produção</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="manager-responsible">Responsável</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-user-check"></i>
-                                        <input type="text" id="manager-responsible" placeholder="Nome do responsável" required>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="manager-priority">Prioridade</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-flag"></i>
-                                        <select id="manager-priority" required>
-                                            <option value="baixa">Baixa</option>
-                                            <option value="media">Média</option>
-                                            <option value="alta">Alta</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="manager-cost">Custo Unitário (R$)</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-dollar-sign"></i>
-                                        <input type="number" id="manager-cost" step="0.01" min="0" placeholder="0.00" required>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group full-width">
-                                    <label for="manager-notes">Observações</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-sticky-note"></i>
-                                        <textarea id="manager-notes" rows="3" placeholder="Adicione observações se necessário"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-block btn-success" id="manager-submit-btn">
-                                <i class="fas fa-check-circle"></i>
-                                <span>Registrar Entrada</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Seção de Manutenção -->
-                <div class="section" id="section-manutencao">
-                    <div class="manager-metrics">
-                        <div class="metric-card">
-                            <div class="metric-header">
-                                <div class="metric-icon">
-                                    <i class="fas fa-tools"></i>
-                                </div>
-                            </div>
-                            <div class="metric-value">12</div>
-                            <div class="metric-label">Solicitações de Manutenção</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-header">
-                                <div class="metric-icon">
-                                    <i class="fas fa-clock"></i>
-                                </div>
-                            </div>
-                            <div class="metric-value">5</div>
-                            <div class="metric-label">Em Andamento</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="metric-header">
-                                <div class="metric-icon">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
-                            </div>
-                            <div class="metric-value">47</div>
-                            <div class="metric-label">Concluídas este Mês</div>
-                        </div>
-                    </div>
-
-                    <div class="maintenance-grid">
-                        <div class="maintenance-card">
-                            <div class="maintenance-header">
-                                <div class="maintenance-icon">
-                                    <i class="fas fa-warehouse"></i>
-                                </div>
-                            </div>
-                            <div class="maintenance-value">3</div>
-                            <div class="maintenance-label">Equipamentos Críticos</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill progress-high"></div>
-                            </div>
-                            <div class="quick-actions">
-                                <button class="quick-action-btn" onclick="alert('Ordem de serviço criada!')">
-                                    <i class="fas fa-wrench"></i> Priorizar
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="maintenance-card">
-                            <div class="maintenance-header">
-                                <div class="maintenance-icon">
-                                    <i class="fas fa-truck"></i>
-                                </div>
-                            </div>
-                            <div class="maintenance-value">8</div>
-                            <div class="maintenance-label">Veículos em Manutenção</div>
-                            <div class="progress-bar">
-                                <div class="progress-fill progress-medium"></div>
-                            </div>
-                            <div class="quick-actions">
-                                <button class="quick-action-btn" onclick="alert('Agendamento realizado!')">
-                                    <i class="fas fa-calendar"></i> Agendar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card manager-card">
-                        <h2 class="card-title manager-title">Ordens de Serviço em Andamento</h2>
-                        
-                        <table class="advanced-table">
-                            <thead>
-                                <tr>
-                                    <th>OS #</th>
-                                    <th>Equipamento</th>
-                                    <th>Tipo</th>
-                                    <th>Responsável</th>
-                                    <th>Prioridade</th>
-                                    <th>Progresso</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>OS-2023-001</td>
-                                    <td>Empilhadeira Elétrica</td>
-                                    <td>Corretiva</td>
-                                    <td>Carlos Silva</td>
-                                    <td><span class="badge badge-danger">Alta</span></td>
-                                    <td>
-                                        <div class="progress-bar">
-                                            <div class="progress-fill progress-high"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>OS-2023-002</td>
-                                    <td>Esteira Transportadora</td>
-                                    <td>Preventiva</td>
-                                    <td>Ana Costa</td>
-                                    <td><span class="badge badge-warning">Média</span></td>
-                                    <td>
-                                        <div class="progress-bar">
-                                            <div class="progress-fill progress-medium"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="card manager-card">
-                        <h2 class="card-title manager-title">Nova Solicitação de Manutenção</h2>
-                        
-                        <form id="maintenance-form">
-                            <div class="transaction-form">
-                                <div class="form-group">
-                                    <label for="maintenance-equipment">Equipamento</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-toolbox"></i>
-                                        <select id="maintenance-equipment" required>
-                                            <option value="">Selecione o equipamento</option>
-                                            <option value="empilhadeira">Empilhadeira Elétrica</option>
-                                            <option value="esteira">Esteira Transportadora</option>
-                                            <option value="refrigeracao">Sistema de Refrigeração</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="maintenance-type">Tipo de Manutenção</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-wrench"></i>
-                                        <select id="maintenance-type" required>
-                                            <option value="preventiva">Preventiva</option>
-                                            <option value="corretiva">Corretiva</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="maintenance-priority">Prioridade</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-flag"></i>
-                                        <select id="maintenance-priority" required>
-                                            <option value="baixa">Baixa</option>
-                                            <option value="media">Média</option>
-                                            <option value="alta">Alta</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group full-width">
-                                    <label for="maintenance-description">Descrição do Problema</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-sticky-note"></i>
-                                        <textarea id="maintenance-description" rows="3" placeholder="Descreva o problema ou serviço necessário" required></textarea>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-block btn-warning">
-                                <i class="fas fa-tools"></i>
-                                <span>Abrir Ordem de Serviço</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                <!-- Seções removidas conforme solicitado -->
             </div>
 
             <!-- Interface do Funcionário - MELHORADA -->
@@ -539,10 +179,6 @@
                         <i class="fas fa-tools"></i>
                         Manutenção
                     </button>
-                   <!--<button class="employee-control-btn" id="employee-btn-nova-solicitacao">
-                        <i class="fas fa-plus-circle"></i>
-                        Nova Solicitação
-                    </button>--> 
                 </div>
 
                 <!-- Seção de Solicitações do Funcionário -->
@@ -760,8 +396,7 @@
                                     <div class="input-with-icon">
                                         <i class="input-icon fas fa-box"></i>
                                         <select id="employee-transaction-material" required>
-                                            <option value="">Selecione um material</
-                                                option>
+                                            <option value="">Selecione um material</option>
                                             <option value="ferramentas">Ferramentas</option>
                                             <option value="eletronicos">Componentes Eletrônicos</option>
                                             <option value="materiais-escritorio">Materiais de Escritório</option>
@@ -1245,18 +880,6 @@
             // Controles do dashboard do gerente
             document.getElementById('btn-movimentacoes').addEventListener('click', function() {
                 switchSection('movimentacoes');
-            });
-
-            document.getElementById('btn-estoque').addEventListener('click', function() {
-                switchSection('estoque');
-            });
-
-            document.getElementById('btn-entrada-materiais').addEventListener('click', function() {
-                switchSection('entrada-materiais');
-            });
-
-            document.getElementById('btn-manutencao').addEventListener('click', function() {
-                switchSection('manutencao');
             });
 
             // Botões de transação do gerente
