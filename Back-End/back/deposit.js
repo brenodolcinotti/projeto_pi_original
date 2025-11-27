@@ -209,26 +209,66 @@
             });
 
             // Formulário de transação do funcionário
-            document.getElementById('employee-transaction-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const material = document.getElementById('employee-transaction-material').value;
-                const quantity = document.getElementById('employee-transaction-quantity').value;
-                const location = document.getElementById('employee-transaction-location').value;
-                const project = document.getElementById('employee-transaction-project').value;
-                const priority = document.getElementById('employee-transaction-priority').value;
-                
-                if (!material || !quantity || !location || !project) {
-                    alert('Por favor, preencha todos os campos obrigatórios!');
-                    return;
-                }
-                
-                const transactionType = document.getElementById('employee-deposit-btn').classList.contains('active') ? 'Entrada' : 'Retirada';
-                
-                alert(`✅ ${transactionType} de material registrada com sucesso!\n\nMaterial: ${material}\nQuantidade: ${quantity}\nProjeto: ${project}\nPrioridade: ${priority.toUpperCase()}`);
-                this.reset();
-            });
+           document.getElementById('employee-transaction-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const nome_produto = document.getElementById('employee-transaction-name').value;
+        const quantidade = document.getElementById('employee-transaction-quantity').value;
+        const local = document.getElementById('employee-transaction-location').value;
+        const date = document.getElementById('employee-transaction-date').value;
+        const observacao = document.getElementById('employee-transaction-notes').value;
+        
+        // Corrigido para verificar apenas campos obrigatórios (produto, quantidade, local)
+        if (!nome_produto.trim() || !quantidade.trim() || !local.trim()) {
+            alert('Por favor, preencha os campos obrigatórios: Produto, Quantidade e Local!');
+            return;
+        }
+        
+        const transactionType = document.getElementById('employee-deposit-btn').classList.contains('active') ? 'Entrada' : 'Retirada';
+        
+        // Estruturando os dados como Objeto JSON (melhor prática para APIs)
+        const dadosParaEnvio = {
+            nome_produto: nome_produto, 
+            quantidade: quantidade, 
+            setor: local, 
+            data_entrada: date, 
+            observacao: observacao,
+            // tipo_transacao: transactionType // Adicionando o tipo de transação
+        };
 
+        const formElement = this; // Captura o elemento do formulário para resetar depois
+
+        const handleSubmit = async() => {
+            try {
+                // A rota da API pode precisar ser ajustada para refletir o tipo de transação (Entrada/Retirada)
+                const endpoint = transactionType === 'Entrada' ? "http://localhost:1111/entrada-estoque" : "http://localhost:1111/saida-estoque";
+                
+                const response = await fetch(endpoint, {
+                    method:"POST",
+                    headers: {"Content-Type" : "application/json"},
+                    body: JSON.stringify(dadosParaEnvio)
+                })
+
+                if (!response.ok) {
+                    throw new Error(`Erro de servidor: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Resposta da API:', data);
+                alert(`Sucesso!`);
+                
+                // Redefine o formulário APÓS o sucesso do envio
+                formElement.reset(); 
+
+            } catch (error) {
+                console.error('Erro ao enviar a transação:', error);
+                alert('Falha ao registrar a transação. Verifique o console e o status do servidor.');
+            }
+        }
+
+        // 3. CHAMA A FUNÇÃO DIRETAMENTE (Remove useEffect)
+        handleSubmit();
+    });
             // Formulário de manutenção do funcionário
             document.getElementById('employee-maintenance-form').addEventListener('submit', function(e) {
                 e.preventDefault();

@@ -392,16 +392,10 @@
                         <form id="employee-transaction-form">
                             <div class="transaction-form">
                                 <div class="form-group">
-                                    <label for="employee-transaction-material">Material</label>
+                                    <label for="employee-transaction-material">Nome do Produto</label>
                                     <div class="input-with-icon">
                                         <i class="input-icon fas fa-box"></i>
-                                        <select id="employee-transaction-material" required>
-                                            <option value="">Selecione um material</option>
-                                            <option value="ferramentas">Ferramentas</option>
-                                            <option value="eletronicos">Componentes Eletrônicos</option>
-                                            <option value="materiais-escritorio">Materiais de Escritório</option>
-                                            <option value="epi">Equipamentos de Proteção</option>
-                                        </select>
+                                        <input type="text" placeholder="Digite o nome do material" id="employee-transaction-name">
                                     </div>
                                 </div>
                                 
@@ -417,34 +411,16 @@
                                     <label for="employee-transaction-location">Localização</label>
                                     <div class="input-with-icon">
                                         <i class="input-icon fas fa-map-marker-alt"></i>
-                                        <select id="employee-transaction-location" required>
-                                            <option value="">Selecione uma localização</option>
-                                            <option value="almoxarifado-a">Almoxarifado A</option>
-                                            <option value="almoxarifado-b">Almoxarifado B</option>
-                                            <option value="setor-producao">Setor de Produção</option>
-                                        </select>
+                                        <input type="text" placeholder="Digite seu setor" required id="employee-transaction-location">
                                     </div>
                                 </div>
                                 
                                 <div class="form-group">
-                                    <label for="employee-transaction-project">Projeto/Atividade</label>
+                                    <label for="employee-transaction-project">Data</label>
                                     <div class="input-with-icon">
                                         <i class="input-icon fas fa-project-diagram"></i>
-                                        <input type="text" id="employee-transaction-project" placeholder="Nome do projeto ou atividade" required>
+                                        <input type="date" placeholder="Digite a data" id="employee-transaction-date" required>
                                     </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="employee-transaction-priority">Prioridade</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-flag"></i>
-                                        <select id="employee-transaction-priority" required>
-                                            <option value="baixa">Baixa</option>
-                                            <option value="media">Média</option>
-                                            <option value="alta">Alta</option>
-                                        </select>
-                                    </div>
-                                </div>
 
                                 <div class="form-group full-width">
                                     <label for="employee-transaction-notes">Observações</label>
