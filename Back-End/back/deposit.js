@@ -12,7 +12,7 @@ var saidaMaterial = false;
             
             if (localStorage.getItem('loggedIn') !== 'true') {
                 alert('⚠️ Você precisa fazer login primeiro!');
-                window.location.href = 'login.html';
+                window.location.href = './login.html';
                 return;
             }
 
@@ -562,3 +562,44 @@ var saidaMaterial = false;
                 alert('❌ Erro ao gerar PDF. A biblioteca jsPDF não está disponível.');
             }
         }
+
+        // get para pegar os dados de entrada e saida de estoque
+
+async function carregarDadosEntrada() {
+    let arrayEntradaMateria = [];
+    let arraySaidaMaterial = [];
+    let quantidadeEntrada = 0;
+
+    try {
+        const response = await fetch("http://localhost:1111/entrada-estoque");
+        const response1 = await fetch("http://localhost:1111/saida-estoque")
+        if (!response.ok) {
+            throw new Error(`Erro de rede: Status ${response.status}`);
+        }
+         if (!response1.ok) {
+            throw new Error(`Erro de rede: Status ${response.status}`);
+        }
+        const data1 = await response.json(); 
+        const data2 = await response1.json();
+        
+        arrayEntradaMateria = data1;
+        arraySaidaMaterial = data2;
+
+        quantidadeEntrada = arrayEntradaMateria.length;
+        quantidadeSaida = arraySaidaMaterial.length;
+
+        console.log("Dados carregados com sucesso:", arrayEntradaMateria);
+        console.log("Dados carregados com sucesso:", arraySaidaMaterial);
+    
+        document.getElementById('card-entrada-material').innerHTML = quantidadeEntrada; 
+        document.getElementById('card-saida-material').innerHTML = quantidadeSaida; 
+        
+    } catch (error) {
+        console.error(error);
+        document.getElementById('card-entrada-material').innerHTML = "-";
+        document.getElementById('card-saida-material').innerHTML = "-"; 
+    }
+}
+carregarDadosEntrada();
+
+        
