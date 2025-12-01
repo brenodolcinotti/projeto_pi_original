@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Depósito - Gerente | SLA Sistema de Logística e Armazenamento</title>
+    <link rel="stylesheet" href="../style/deposit.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <header id="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon" id="logo-icon">SLA</div>
+                    <h1>Sistema de <span>Logística e Armazenamento</span></h1>
+                </div>
+                <div class="user-info" id="user-info">
+                    <span id="user-name">Usuário</span>
+                    <span class="user-type" id="user-type-display">Gerente</span>
+                    <a href="#" class="btn btn-danger" id="logout-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Sair
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="page">
+        <div class="container">
+            <div class="manager-dashboard" id="manager-dashboard">
+                <div class="dashboard-header">
+                    <div class="welcome-message">
+                        <h2 id="welcome-user">Bem-vindo, Gerente!</h2>
+                        <p>Painel de Controle Administrativo</p>
+                    </div>
+                    <div class="pdf-container">
+                        <button class="btn btn-pdf" id="generate-pdf-btn">
+                            <i class="fas fa-file-pdf"></i>
+                            Gerar Relatório PDF
+                        </button>
+                    </div>
+                </div>
+
+                <div class="manager-controls">
+                    <button class="control-btn active" id="btn-movimentacoes" onclick="switchSection('movimentacoes')">
+                        <i class="fas fa-chart-line"></i>
+                        Movimentações
+                    </button>
+                    </div>
+
+                <div class="section active" id="section-movimentacoes">
+                    <div class="manager-metrics">
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-icon">
+                                    <i class="fas fa-warehouse"></i>
+                                </div>
+                            </div>
+                            <div class="metric-value">R$ 284.5K</div>
+                            <div class="metric-label">Valor Total em Estoque</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-icon">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                            </div>
+                            <div class="metric-value">3.2x</div>
+                            <div class="metric-label">Giro de Estoque</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-icon">
+                                    <i class="fas fa-box-open"></i>
+                                </div>
+                            </div>
+                            <div class="metric-value">1.247</div>
+                            <div class="metric-label">Itens em Estoque</div>
+                        </div>
+                    </div>
+
+                    <div class="alerts-container">
+                        <h3 style="margin-bottom: 1rem; color: var(--light);">
+                            <i class="fas fa-bell"></i> Alertas do Sistema
+                        </h3>
+                        <div class="alert-item">
+                            <div class="alert-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="alert-content">
+                                <div class="alert-title">Estoque Crítico</div>
+                                <div class="alert-message">Componentes Eletrônicos abaixo do nível mínimo</div>
+                            </div>
+                            <button class="btn btn-secondary">Resolver</button>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Movimentações por Categoria</h3>
+                            </div>
+                            <canvas id="categoryChart" height="250"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Status do Estoque</h3>
+                            </div>
+                            <canvas id="inventoryChart" height="250"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card manager-card">
+                        <h2 class="card-title manager-title">Movimentações Recentes</h2>
+                        
+                        <table class="advanced-table">
+                            <thead>
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Usuário</th>
+                                    <th>Tipo</th>
+                                    <th>Material</th>
+                                    <th>Quantidade</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>15/10/2023 14:30</td>
+                                    <td>João Silva</td>
+                                    <td><span class="badge badge-success"><i class="fas fa-arrow-down"></i> Entrada</span></td>
+                                    <td>Ferramentas</td>
+                                    <td>50</td>
+                                    <td><span class="status-badge status-low">Concluído</span></td>
+                                </tr>
+                                <tr>
+                                    <td>15/10/2023 11:15</td>
+                                    <td>Maria Santos</td>
+                                    <td><span class="badge badge-danger"><i class="fas fa-arrow-up"></i> Saída</span></td>
+                                    <td>Componentes Eletrônicos</td>
+                                    <td>25</td>
+                                    <td><span class="status-badge status-high">Pendente</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <script src="../../Back-End/back/deposit.js"></script>
+</body>
+</html>

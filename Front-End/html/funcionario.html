@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Depósito - Funcionário | SLA Sistema de Logística e Armazenamento</title>
+    <link rel="stylesheet" href="../style/deposit.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <header id="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon" id="logo-icon">SLA</div>
+                    <h1>Sistema de <span>Logística e Armazenamento</span></h1>
+                </div>
+                <div class="user-info" id="user-info">
+                    <span id="user-name">Usuário</span>
+                    <span class="user-type" id="user-type-display">Funcionário</span>
+                    <a href="#" class="btn btn-danger" id="logout-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Sair
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="page">
+        <div class="container">
+            <div class="employee-dashboard" id="employee-dashboard">
+                <div class="dashboard-header">
+                    <div class="welcome-message">
+                        <h2 id="welcome-employee">Bem-vindo, Funcionário!</h2>
+                        <p>Painel de Controle do Funcionário</p>
+                    </div>
+                </div>
+
+                <div class="employee-controls">
+                    <button class="employee-control-btn active" id="employee-btn-solicitacoes" onclick="switchEmployeeSection('solicitacoes')">
+                        <i class="fas fa-file-alt"></i>
+                        Solicitações
+                    </button>
+                    <button class="employee-control-btn" id="employee-btn-movimentacao" onclick="switchEmployeeSection('movimentacao')">
+                        <i class="fas fa-exchange-alt"></i>
+                        Movimentação
+                    </button>
+                    <button class="employee-control-btn" id="employee-btn-manutencao" onclick="switchEmployeeSection('manutencao')">
+                        <i class="fas fa-tools"></i>
+                        Manutenção
+                    </button>
+                </div>
+
+                <div class="employee-section active" id="employee-section-solicitacoes">
+                    <div class="employee-metrics">
+                        <div class="employee-metric-card">
+                            <div class="employee-metric-header">
+                                <div class="employee-metric-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                            <div class="employee-metric-value">3</div>
+                            <div class="employee-metric-label">Solicitações Pendentes</div>
+                        </div>
+                        <div class="employee-metric-card">
+                            <div class="employee-metric-header">
+                                <div class="employee-metric-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="employee-metric-value">18</div>
+                            <div class="employee-metric-label">Solicitações Aprovadas</div>
+                        </div>
+                        <div class="employee-metric-card">
+                            <div class="employee-metric-header">
+                                <div class="employee-metric-icon">
+                                    <i class="fas fa-tools"></i>
+                                </div>
+                            </div>
+                            <div class="employee-metric-value">24</div>
+                            <div class="employee-metric-label">Itens Solicitados</div>
+                        </div>
+                    </div>
+
+                    <div class="card employee-card">
+                        <h2 class="card-title employee-title">Minhas Solicitações Recentes</h2>
+                        
+                        <table class="advanced-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Data</th>
+                                    <th>Material</th>
+                                    <th>Quantidade</th>
+                                    <th>Projeto</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#SOL-2023-001</td>
+                                    <td>15/10/2023</td>
+                                    <td>Ferramentas</td>
+                                    <td>5</td>
+                                    <td>Manutenção Preventiva</td>
+                                    <td><span class="badge badge-success">Aprovado</span></td>
+                                    <td>
+                                        <button class="btn btn-secondary" style="padding: 0.5rem;">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#SOL-2023-002</td>
+                                    <td>14/10/2023</td>
+                                    <td>Componentes Eletrônicos</td>
+                                    <td>10</td>
+                                    <td>Reparo de Equipamentos</td>
+                                    <td><span class="badge badge-warning">Em Análise</span></td>
+                                    <td>
+                                        <button class="btn btn-secondary" style="padding: 0.5rem;">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#SOL-2023-003</td>
+                                    <td>13/10/2023</td>
+                                    <td>EPI - Luvas</td>
+                                    <td>2</td>
+                                    <td>Segurança do Trabalho</td>
+                                    <td><span class="badge badge-danger">Rejeitado</span></td>
+                                    <td>
+                                        <button class="btn btn-secondary" style="padding: 0.5rem;">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="employee-section" id="employee-section-movimentacao">
+                    <div class="employee-metrics">
+                        <div class="employee-metric-card">
+                            <div class="employee-metric-header">
+                                <div class="employee-metric-icon">
+                                    <i class="fas fa-arrow-down"></i>
+                                </div>
+                            </div>
+                            <div class="employee-metric-value">12</div>
+                            <div class="employee-metric-label">Entradas Este Mês</div>
+                        </div>
+                        <div class="employee-metric-card">
+                            <div class="employee-metric-header">
+                                <div class="employee-metric-icon">
+                                    <i class="fas fa-arrow-up"></i>
+                                </div>
+                            </div>
+                            <div class="employee-metric-value">8</div>
+                            <div class="employee-metric-label">Saídas Este Mês</div>
+                        </div>
+                        <div class="employee-metric-card">
+                            <div class="employee-metric-header">
+                                <div class="employee-metric-icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                            </div>
+                            <div class="employee-metric-value">47</div>
+                            <div class="employee-metric-label">Itens Movimentados</div>
+                        </div>
+                    </div>
+
+                    <div class="card employee-card">
+                        <h2 class="card-title employee-title">Movimentação de Materiais</h2>
+                        
+                        <div class="transaction-type">
+                            <button class="btn active" id="employee-deposit-btn">
+                                <i class="fas fa-boxes"></i>
+                                <span>Entrada de Material</span>
+                            </button>
+                            <button class="btn btn-secondary" id="employee-withdrawal-btn">
+                                <i class="fas fa-dolly"></i>
+                                <span>Retirada de Material</span>
+                            </button>
+                        </div>
+                        
+                        <form id="employee-transaction-form">
+                            <div class="transaction-form">
+                                <div class="form-group">
+                                    <label for="employee-transaction-material">Nome do Produto</label>
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-box"></i>
+                                        <input type="text" placeholder="Digite o nome do material" id="employee-transaction-name">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="employee-transaction-quantity">Quantidade</label>
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-hashtag"></i>
+                                        <input type="number" id="employee-transaction-quantity" min="1" placeholder="Digite a quantidade" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="employee-transaction-location">Localização</label>
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-map-marker-alt"></i>
+                                        <input type="text" placeholder="Digite seu setor" required id="employee-transaction-location">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="employee-transaction-date">Data</label>
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-project-diagram"></i>
+                                        <input type="date" placeholder="Digite a data" id="employee-transaction-date" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label for="employee-transaction-notes">Observações</label>
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-sticky-note"></i>
+                                        <textarea id="employee-transaction-notes" rows="3" placeholder="Adicione observações se necessário"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-block btn-success" id="employee-transaction-submit-btn">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Registrar Entrada</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="card employee-card">
+                        <h2 class="card-title employee-title">Minhas Movimentações Recentes</h2>
+                        
+                        <table class="advanced-table">
+                            <thead>
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Tipo</th>
+                                    <th>Material</th>
+                                    <th>Quantidade</th>
+                                    <th>Localização</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>15/10/2023 14:30</td>
+                                    <td><span class="badge badge-success"><i class="fas fa-arrow-down"></i> Entrada</span></td>
+                                    <td>Ferramentas</td>
+                                    <td>5</td>
+                                    <td>Almoxarifado A</td>
+                                    <td><span class="status-badge status-low">Concluído</span></td>
+                                </tr>
+                                <tr>
+                                    <td>15/10/2023 11:15</td>
+                                    <td><span class="badge badge-danger"><i class="fas fa-arrow-up"></i> Saída</span></td>
+                                    <td>Componentes Eletrônicos</td>
+                                    <td>10</td>
+                                    <td>Setor de Produção</td>
+                                    <td><span class="status-badge status-high">Pendente</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="employee-section" id="employee-section-manutencao">
+                    <div class="employee-metrics">
+                        <div class="employee-metric-card">
+                            <div class="employee-metric-header">
+                                <div class="employee-metric-icon">
+                                    <i class="fas fa-tools"></i>
+                                </div>
+                            </div>
+                            <div class="employee-metric-value">5</div>
+                            <div class="employee-metric-label">Solicitações de Manutenção</div>
+                        </div>
+                        <div class="employee-metric-card">
+                            <div class="employee-metric-header">
+                                <div class="employee-metric-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                            <div class="employee-metric-value">2</div>
+                            <div class="employee-metric-label">Em Andamento</div>
+                        </div>
+                        <div class="employee-metric-card">
+                            <div class="employee-metric-header">
+                                <div class="employee-metric-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="employee-metric-value">18</div>
+                            <div class="employee-metric-label">Concluídas</div>
+                        </div>
+                    </div>
+
+                    <div class="maintenance-grid">
+                        <div class="maintenance-card">
+                            <div class="maintenance-header">
+                                <div class="maintenance-icon">
+                                    <i class="fas fa-warehouse"></i>
+                                </div>
+                            </div>
+                            <div class="maintenance-value">2</div>
+                            <div class="maintenance-label">Equipamentos Críticos</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-high"></div>
+                            </div>
+                            <div class="employee-quick-actions">
+                                <button class="employee-quick-action-btn" onclick="solicitarManutencao('Empilhadeira')">
+                                    <i class="fas fa-wrench"></i> Solicitar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="maintenance-card">
+                            <div class="maintenance-header">
+                                <div class="maintenance-icon">
+                                    <i class="fas fa-truck"></i>
+                                </div>
+                            </div>
+                            <div class="maintenance-value">3</div>
+                            <div class="maintenance-label">Veículos em Manutenção</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-medium"></div>
+                            </div>
+                            <div class="employee-quick-actions">
+                                <button class="employee-quick-action-btn" onclick="solicitarManutencao('Veículos')">
+                                    <i class="fas fa-calendar"></i> Agendar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card employee-card">
+                        <h2 class="card-title employee-title">Minhas Solicitações de Manutenção</h2>
+                        
+                        <table class="advanced-table">
+                            <thead>
+                                <tr>
+                                    <th>OS #</th>
+                                    <th>Equipamento</th>
+                                    <th>Tipo</th>
+                                    <th>Data</th>
+                                    <th>Prioridade</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>OS-2023-015</td>
+                                    <td>Empilhadeira Elétrica</td>
+                                    <td>Corretiva</td>
+                                    <td>15/10/2023</td>
+                                    <td><span class="badge badge-danger">Alta</span></td>
+                                    <td><span class="status-badge status-high">Pendente</span></td>
+                                </tr>
+                                <tr>
+                                    <td>OS-2023-014</td>
+                                    <td>Esteira Transportadora</td>
+                                    <td>Preventiva</td>
+                                    <td>12/10/2023</td>
+                                    <td><span class="badge badge-warning">Média</span></td>
+                                    <td><span class="status-badge status-low">Concluído</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="card employee-card">
+
+                        <h2 class="card-title employee-title">Minhas Solicitações de Manutenção</h2>
+
+                       
+
+                        <table class="advanced-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>OS #</th>
+
+                                    <th>Equipamento</th>
+
+                                    <th>Tipo</th>
+
+                                    <th>Data</th>
+
+                                    <th>Prioridade</th>
+
+                                    <th>Status</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td>OS-2023-015</td>
+
+                                    <td>Empilhadeira Elétrica</td>
+
+                                    <td>Corretiva</td>
+
+                                    <td>15/10/2023</td>
+
+                                    <td><span class="badge badge-danger">Alta</span></td>
+
+                                    <td><span class="status-badge status-high">Pendente</span></td>
+
+                                </tr>
+
+                                <tr>
+
+                                    <td>OS-2023-014</td>
+
+                                    <td>Esteira Transportadora</td>
+
+                                    <td>Preventiva</td>
+
+                                    <td>12/10/2023</td>
+
+                                    <td><span class="badge badge-warning">Média</span></td>
+
+                                    <td><span class="status-badge status-low">Concluído</span></td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+
+                    <div class="card employee-card">
+
+                        <h2 class="card-title employee-title">Nova Solicitação de Manutenção</h2>
+
+                       
+
+                        <form id="employee-maintenance-form">
+
+                            <div class="transaction-form">
+
+                                <div class="form-group">
+
+                                    <label for="employee-maintenance-equipment">Equipamento</label>
+
+                                    <div class="input-with-icon">
+
+                                        <i class="input-icon fas fa-toolbox"></i>
+
+                                        <select id="employee-maintenance-equipment" required>
+
+                                            <option value="">Selecione o equipamento</option>
+
+                                            <option value="empilhadeira">Empilhadeira Elétrica</option>
+
+                                            <option value="esteira">Esteira Transportadora</option>
+
+                                            <option value="refrigeracao">Sistema de Refrigeração</option>
+
+                                            <option value="computador">Computador</option>
+
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+                               
+
+                                <div class="form-group">
+
+                                    <label for="employee-maintenance-type">Tipo de Manutenção</label>
+
+                                    <div class="input-with-icon">
+
+                                        <i class="input-icon fas fa-wrench"></i>
+
+                                        <select id="employee-maintenance-type" required>
+
+                                            <option value="preventiva">Preventiva</option>
+
+                                            <option value="corretiva">Corretiva</option>
+
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+                               
+
+                                <div class="form-group">
+
+                                    <label for="employee-maintenance-priority">Prioridade</label>
+
+                                    <div class="input-with-icon">
+
+                                        <i class="input-icon fas fa-flag"></i>
+
+                                        <select id="employee-maintenance-priority" required>
+
+                                            <option value="baixa">Baixa</option>
+
+                                            <option value="media">Média</option>
+
+                                            <option value="alta">Alta</option>
+
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+                               
+
+                                <div class="form-group full-width">
+
+                                    <label for="employee-maintenance-description">Descrição do Problema</label>
+
+                                    <div class="input-with-icon">
+
+                                        <i class="input-icon fas fa-sticky-note"></i>
+
+                                        <textarea id="employee-maintenance-description" rows="3" placeholder="Descreva o problema ou serviço necessário" required></textarea>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                           
+
+                            <button type="submit" class="btn btn-block btn-warning">
+
+                                <i class="fas fa-tools"></i>
+
+                                <span>Solicitar Manutenção</span>
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Seção de Nova Solicitação -->
+
+                <div class="employee-section" id="employee-section-nova-solicitacao">
+
+                    <div class="card employee-card">
+
+                        <h2 class="card-title employee-title">Nova Solicitação de Material</h2>
+
+                       
+
+                        <form id="employee-request-form">
+
+                            <div class="transaction-form">
+
+                                <div class="form-group">
+
+                                    <label for="employee-material">Material Solicitado</label>
+
+                                    <div class="input-with-icon">
+
+                                        <i class="input-icon fas fa-box"></i>
+
+                                        <select id="employee-material" required>
+
+                                            <option value="">Selecione um material</option>
+
+                                            <option value="ferramentas">Ferramentas</option>
+
+                                            <option value="eletronicos">Componentes Eletrônicos</option>
+
+                                            <option value="materiais-escritorio">Materiais de Escritório</option>
+
+                                            <option value="epi">Equipamentos de Proteção</option>
+
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+                               
+
+                                <div class="form-group">
+
+                                    <label for="employee-quantity">Quantidade</label>
+
+                                    <div class="input-with-icon">
+
+                                        <i class="input-icon fas fa-hashtag"></i>
+
+                                        <input type="number" id="employee-quantity" min="1" placeholder="Digite a quantidade" required>
+
+                                    </div>
+
+                                </div>
+
+                               
+
+                                <div class="form-group">
+
+                                    <label for="employee-project">Projeto/Atividade</label>
+
+                                    <div class="input-with-icon">
+
+                                        <i class="input-icon fas fa-project-diagram"></i>
+
+                                        <input type="text" id="employee-project" placeholder="Nome do projeto ou atividade" required>
+
+                                    </div>
+
+                                </div>
+
+                               
+
+                                <div class="form-group">
+
+                                    <label for="employee-urgency">Urgência</label>
+
+                                    <div class="input-with-icon">
+
+                                        <i class="input-icon fas fa-exclamation-triangle"></i>
+
+                                        <select id="employee-urgency" required>
+
+                                            <option value="baixa">Baixa</option>
+
+                                            <option value="media">Média</option>
+
+                                            <option value="alta">Alta</option>
+
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="form-group full-width">
+
+                                    <label for="employee-justification">Justificativa</label>
+
+                                    <div class="input-with-icon">
+
+                                        <i class="input-icon fas fa-sticky-note"></i>
+
+                                        <textarea id="employee-justification" rows="3" placeholder="Explique a necessidade deste material" required></textarea>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                           
+
+                            <button type="submit" class="btn btn-block btn-success">
+
+                                <i class="fas fa-paper-plane"></i>
+
+                                <span>Enviar Solicitação</span>
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Interface Básica do Funcionário (Fallback) -->
+
+            <div class="employee-interface" id="employee-interface">
+
+                <div class="card">
+
+                    <h2 class="card-title">Interface do Funcionário</h2>
+
+                    <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+
+                        Esta é a interface do funcionário. Faça login como gerente para acessar o dashboard administrativo.
+
+                    </p>
+
+                    <div style="text-align: center;">
+
+                        <button class="btn btn-success" onclick="location.reload()">
+
+                            <i class="fas fa-sync-alt"></i>
+
+                            Recarregar Página
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <script src="../../Back-End/back/deposit.js"></script>
+
+</body>
+
+</html>

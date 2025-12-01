@@ -206,6 +206,7 @@ var saidaMaterial = false;
 
             document.getElementById('employee-btn-manutencao').addEventListener('click', function() {
                 switchEmployeeSection('manutencao');
+                alert("manuta");
             });
 
             // Botões de transação do funcionário
@@ -370,7 +371,7 @@ var saidaMaterial = false;
             document.getElementById('logout-btn').addEventListener('click', function(e) {
                 e.preventDefault();
                 localStorage.clear();
-                window.location.href = 'login.html';
+                window.location.href = './login.html';
             });
         }
 
