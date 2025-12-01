@@ -1,3 +1,6 @@
+var entradaMaterial = false;
+var saidaMaterial = false;
+
 // VERIFICAR LOGIN E CONFIGURAR INTERFACE
         document.addEventListener('DOMContentLoaded', function() {
             console.log('=== VERIFICANDO LOGIN ===');
@@ -58,24 +61,30 @@
             console.log('✅ Modo gerente ativado com sucesso!');
         }
 
-        function activateEmployeeMode() {
-            const header = document.getElementById('main-header');
-            const logoIcon = document.getElementById('logo-icon');
-            const userInfo = document.getElementById('user-info');
-            const userTypeDisplay = document.getElementById('user-type-display');
+     function activateEmployeeMode() {
+            const header = document.getElementById('main-header');
+            const logoIcon = document.getElementById('logo-icon');
+            const userInfo = document.getElementById('user-info');
+            const userTypeDisplay = document.getElementById('user-type-display');
+            
+            header.classList.add('employee-mode');
+            logoIcon.classList.add('employee');
+            userInfo.classList.add('employee');
+            userTypeDisplay.classList.add('employee');
+            
+            document.getElementById('manager-dashboard').style.display = 'none';
+            document.getElementById('employee-dashboard').style.display = 'block';
+            document.getElementById('employee-interface').style.display = 'none';
+            
+            setupEmployeeEventListeners();
+            // 🎯 ADIÇÃO AQUI: Define 'movimentacao' como a seção inicial ao carregar
+            // (Assumindo que 'movimentacao' é a seção principal do funcionário)
+            switchEmployeeSection('manutencao'); 
             
-            header.classList.add('employee-mode');
-            logoIcon.classList.add('employee');
-            userInfo.classList.add('employee');
-            userTypeDisplay.classList.add('employee');
-            
-            document.getElementById('manager-dashboard').style.display = 'none';
-            document.getElementById('employee-dashboard').style.display = 'block';
-            document.getElementById('employee-interface').style.display = 'none';
-            
-            setupEmployeeEventListeners();
-            console.log('✅ Modo funcionário ativado com sucesso!');
-        }
+            console.log('✅ Modo funcionário ativado com sucesso!');
+        }
+
+// ... o restante do seu código permanece o mesmo.
 
         function initializeManagerCharts() {
             // Gráfico de movimentações por categoria
@@ -201,10 +210,12 @@
 
             // Botões de transação do funcionário
             document.getElementById('employee-deposit-btn').addEventListener('click', function() {
+                entradaMaterial = true;
                 setEmployeeTransactionType('deposit');
             });
             
             document.getElementById('employee-withdrawal-btn').addEventListener('click', function() {
+                entradaMaterial = false;
                 setEmployeeTransactionType('withdrawal');
             });
 
@@ -219,7 +230,7 @@
         const observacao = document.getElementById('employee-transaction-notes').value;
         
         // Corrigido para verificar apenas campos obrigatórios (produto, quantidade, local)
-        if (!nome_produto.trim() || !quantidade.trim() || !local.trim()) {
+        if (!nome_produto.trim() || !quantidade.trim() || !local.trim()|| !date.trim()) {
             alert('Por favor, preencha os campos obrigatórios: Produto, Quantidade e Local!');
             return;
         }
@@ -227,7 +238,7 @@
         const transactionType = document.getElementById('employee-deposit-btn').classList.contains('active') ? 'Entrada' : 'Retirada';
         
         // Estruturando os dados como Objeto JSON (melhor prática para APIs)
-        const dadosParaEnvio = {
+        const dadosEntrada = {
             nome_produto: nome_produto, 
             quantidade: quantidade, 
             setor: local, 
@@ -236,35 +247,67 @@
             // tipo_transacao: transactionType // Adicionando o tipo de transação
         };
 
+        const dadosSaida = {
+            nome_produto: nome_produto, 
+            quantidade: quantidade, 
+            setor: local, 
+            data_saida: date, 
+            observacao: observacao
+        }
+
         const formElement = this; // Captura o elemento do formulário para resetar depois
 
-        const handleSubmit = async() => {
-            try {
-                // A rota da API pode precisar ser ajustada para refletir o tipo de transação (Entrada/Retirada)
-                const endpoint = transactionType === 'Entrada' ? "http://localhost:1111/entrada-estoque" : "http://localhost:1111/saida-estoque";
-                
-                const response = await fetch(endpoint, {
-                    method:"POST",
-                    headers: {"Content-Type" : "application/json"},
-                    body: JSON.stringify(dadosParaEnvio)
-                })
+       const handleSubmit = async () => {
 
-                if (!response.ok) {
-                    throw new Error(`Erro de servidor: ${response.status}`);
-                }
+    // Inicializar como null garante que a variável existe, mas tem um valor seguro
+    let response = null; // Alteração mínima aqui
 
-                const data = await response.json();
-                console.log('Resposta da API:', data);
-                alert(`Sucesso!`);
-                
-                // Redefine o formulário APÓS o sucesso do envio
-                formElement.reset(); 
-
-            } catch (error) {
-                console.error('Erro ao enviar a transação:', error);
-                alert('Falha ao registrar a transação. Verifique o console e o status do servidor.');
-            }
+    try {
+        if (entradaMaterial) {
+            response = await fetch("http://localhost:1111/entrada-estoque", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(dadosEntrada)
+            });
+        } else {
+            response = await fetch("http://localhost:1111/saida-estoque", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(dadosSaida)
+            });
         }
+
+        // Se a requisição foi feita, mas o status HTTP é de erro (4xx ou 5xx)
+        if (!response.ok) {
+            // Lemos a mensagem de erro do servidor para dar um feedback melhor
+            const erroData = await response.json().catch(() => ({})); 
+            const mensagemErro = erroData.message || `Erro de servidor: ${response.status}`;
+            
+            // Forçamos a exceção, que será capturada pelo bloco catch
+            throw new Error(mensagemErro);
+        }
+
+        // Se response.ok for true (status 2xx)
+        const data = await response.json();
+        console.log('Resposta da API:', data);
+        alert(`Sucesso! Transação registrada.`);
+
+        // Redefine o formulário APÓS o sucesso do envio
+        // Nota: Garanta que 'formElement' esteja no escopo, ou use e.target.reset() 
+        // se a função for chamada a partir de um evento de formulário.
+        if (formElement) formElement.reset();
+
+    } catch (error) {
+        // Este bloco captura:
+        // 1. Erros de rede (fetch falhou totalmente)
+        // 2. Erros de status HTTP (4xx/5xx) que foram jogados pelo 'throw new Error'
+        
+        console.error('Erro ao enviar a transação:', error);
+        
+        // Exibe a mensagem de erro capturada (que pode ser a mensagem do servidor)
+        alert(`Falha ao registrar a transação. Detalhes: ${error.message || 'Verifique o console e o status do servidor.'}`);
+    }
+}
 
         // 3. CHAMA A FUNÇÃO DIRETAMENTE (Remove useEffect)
         handleSubmit();
