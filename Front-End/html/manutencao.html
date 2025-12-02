@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Depósito - Manutenção | SLA Sistema de Logística e Armazenamento</title>
+    <link rel="stylesheet" href="../style/deposit.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <header id="main-header" class="maintenance-mode">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon maintenance" id="logo-icon">SLA</div>
+                    <h1>Sistema de <span>Logística e Armazenamento</span></h1>
+                </div>
+                <div class="user-info maintenance" id="user-info">
+                    <span id="user-name">Técnico</span>
+                    <span class="user-type maintenance" id="user-type-display">Manutenção</span>
+                    <a href="login.html" class="btn btn-danger" id="logout-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Sair
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="page">
+        <div class="container">
+            <!-- Dashboard do Técnico de Manutenção -->
+            <div class="maintenance-dashboard" id="maintenance-dashboard">
+                <div class="dashboard-header">
+                    <div class="welcome-message">
+                        <h2 id="welcome-maintenance">Bem-vindo, Técnico de Manutenção!</h2>
+                        <p>Painel de Controle de Manutenção</p>
+                    </div>
+                </div>
+
+                <div class="maintenance-controls">
+                    <button class="maintenance-control-btn active" id="maintenance-btn-registrar" onclick="switchMaintenanceSection('registrar')">
+                        <i class="fas fa-clipboard-check"></i>
+                        Registrar Manutenção
+                    </button>
+                    <button class="maintenance-control-btn" id="maintenance-btn-historico" onclick="switchMaintenanceSection('historico')">
+                        <i class="fas fa-history"></i>
+                        Histórico
+                    </button>
+                    <button class="maintenance-control-btn" id="maintenance-btn-pendentes" onclick="switchMaintenanceSection('pendentes')">
+                        <i class="fas fa-clock"></i>
+                        Pendentes
+                    </button>
+                </div>
+
+                <div class="maintenance-section active" id="maintenance-section-registrar">
+                    <div class="maintenance-metrics">
+                        <div class="maintenance-metric-card">
+                            <div class="maintenance-metric-header">
+                                <div class="maintenance-metric-icon">
+                                    <i class="fas fa-tools"></i>
+                                </div>
+                            </div>
+                            <div class="maintenance-metric-value">5</div>
+                            <div class="maintenance-metric-label">Manutenções Pendentes</div>
+                        </div>
+                        <div class="maintenance-metric-card">
+                            <div class="maintenance-metric-header">
+                                <div class="maintenance-metric-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="maintenance-metric-value">18</div>
+                            <div class="maintenance-metric-label">Concluídas Este Mês</div>
+                        </div>
+                        <div class="maintenance-metric-card">
+                            <div class="maintenance-metric-header">
+                                <div class="maintenance-metric-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                            </div>
+                            <div class="maintenance-metric-value">2</div>
+                            <div class="maintenance-metric-label">Críticas</div>
+                        </div>
+                    </div>
+
+                    <div class="card maintenance-card">
+                        <h2 class="card-title maintenance-title">Registrar Manutenção Concluída</h2>
+                       
+                        <form id="maintenance-register-form">
+                            <div class="transaction-form">
+                                <div class="form-group">
+                                    <label for="maintenance-os-number">Número da OS</label>
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-hashtag"></i>
+                                        <input type="text" id="maintenance-os-number" placeholder="Ex: OS-2023-001" required>
+                                    </div>
+                                </div>
+                               
+                                <div class="form-group">
+                                    <label for="maintenance-equipment">Equipamento</label>
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-toolbox"></i>
+                                        <select id="maintenance-equipment" required>
+                                            <option value="">Selecione o equipamento</option>
+                                            <option value="empilhadeira">Empilhadeira Elétrica</option>
+                                            <option value="esteira">Esteira Transportadora</option>
+                                            <option value="refrigeracao">Sistema de Refrigeração</option>
+                                            <option value="computador">Computador</option>
+                                            <option value="veiculo">Veículo</option>
+                                            <option value="outro">Outro</option>
+                                        </select>
+                                    </div>
+                                </div>
+                               
+                                <div class="form-group">
+                                    <label for="maintenance-type">Tipo de Manutenção</label>
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-wrench"></i>
+                                        <select id="maintenance-type" required>
+                                            <option value="preventiva">Preventiva</option>
+                                            <option value="corretiva">Corretiva</option>
+                                            <option value="preditiva">Preditiva</option>
+                                        </select>
+                                    </div>
+                                </div>
+                               
+                                <div class="form-group">
+                                    <label for="maintenance-date">Data da Manutenção</label>
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-calendar-alt"></i>
+                                        <input type="date" id="maintenance-date" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="maintenance-technician">Técnico Responsável</label>
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-user"></i>
+                                        <input type="text" id="maintenance-technician" placeholder="Nome do técnico" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="maintenance-duration">Duração (horas)</label>
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-clock"></i>
+                                        <input type="number" id="maintenance-duration" min="0.5" step="0.5" placeholder="Ex: 2.5" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label for="maintenance-problem">Problema Identificado</label>
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-search"></i>
+                                        <textarea id="maintenance-problem" rows="2" placeholder="Descreva o problema encontrado" required></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label for="maintenance-solution">Solução Aplicada</label>
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-check-circle"></i>
+                                        <textarea id="maintenance-solution" rows="3" placeholder="Descreva a solução aplicada" required></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="maintenance-status">Status</label>
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-flag"></i>
+                                        <select id="maintenance-status" required>
+                                            <option value="concluido">Concluído</option>
+                                            <option value="pendente">Pendente</option>
+                                            <option value="aguardando_pecas">Aguardando Peças</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="maintenance-cost">Custo (R$)</label>
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-dollar-sign"></i>
+                                        <input type="number" id="maintenance-cost" min="0" step="0.01" placeholder="0.00">
+                                    </div>
+                                </div>
+                            </div>
+                           
+                            <button type="submit" class="btn btn-block btn-success">
+                                <i class="fas fa-save"></i>
+                                <span>Registrar Manutenção</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="maintenance-section" id="maintenance-section-historico">
+                    <div class="card maintenance-card">
+                        <h2 class="card-title maintenance-title">Histórico de Manutenções</h2>
+                        
+                        <div class="table-responsive">
+                            <table class="advanced-table">
+                                <thead>
+                                    <tr>
+                                        <th>OS #</th>
+                                        <th>Equipamento</th>
+                                        <th>Tipo</th>
+                                        <th>Data</th>
+                                        <th>Técnico</th>
+                                        <th>Status</th>
+                                        <th>Custo</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="maintenance-history-body">
+                                    <!-- Dados serão preenchidos via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="maintenance-section" id="maintenance-section-pendentes">
+                    <div class="card maintenance-card">
+                        <h2 class="card-title maintenance-title">Manutenções Pendentes</h2>
+                        
+                        <div class="table-responsive">
+                            <table class="advanced-table">
+                                <thead>
+                                    <tr>
+                                        <th>OS #</th>
+                                        <th>Equipamento</th>
+                                        <th>Tipo</th>
+                                        <th>Data Solicitação</th>
+                                        <th>Solicitante</th>
+                                        <th>Prioridade</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="maintenance-pending-body">
+                                    <tr>
+                                        <td>OS-2023-016</td>
+                                        <td>Empilhadeira Elétrica</td>
+                                        <td>Corretiva</td>
+                                        <td>16/10/2023</td>
+                                        <td>João Silva</td>
+                                        <td><span class="badge badge-danger">Alta</span></td>
+                                        <td><span class="status-badge status-high">Pendente</span></td>
+                                        <td>
+                                            <button class="btn btn-primary btn-sm" onclick="atenderManutencao('OS-2023-016')">
+                                                <i class="fas fa-wrench"></i> Atender
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>OS-2023-017</td>
+                                        <td>Esteira Transportadora</td>
+                                        <td>Preventiva</td>
+                                        <td>15/10/2023</td>
+                                        <td>Maria Santos</td>
+                                        <td><span class="badge badge-warning">Média</span></td>
+                                        <td><span class="status-badge status-medium">Aguardando</span></td>
+                                        <td>
+                                            <button class="btn btn-primary btn-sm" onclick="atenderManutencao('OS-2023-017')">
+                                                <i class="fas fa-wrench"></i> Atender
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Variáveis globais para armazenar dados
+        let maintenanceHistory = [
+            {
+                os: "OS-2023-015",
+                equipment: "Empilhadeira Elétrica",
+                type: "Corretiva",
+                date: "15/10/2023",
+                technician: "João Silva",
+                status: "Concluído",
+                cost: "R$ 450,00"
+            },
+            {
+                os: "OS-2023-014",
+                equipment: "Esteira Transportadora",
+                type: "Preventiva",
+                date: "12/10/2023",
+                technician: "Maria Santos",
+                status: "Concluído",
+                cost: "R$ 320,00"
+            },
+            {
+                os: "OS-2023-013",
+                equipment: "Sistema de Refrigeração",
+                type: "Preventiva",
+                date: "10/10/2023",
+                technician: "Carlos Oliveira",
+                status: "Concluído",
+                cost: "R$ 580,00"
+            }
+        ];
+
+        // Função para alternar entre seções de manutenção
+        function switchMaintenanceSection(sectionId) {
+            // Remover classe active de todos os botões
+            document.querySelectorAll('.maintenance-control-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Remover classe active de todas as seções
+            document.querySelectorAll('.maintenance-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Adicionar classe active ao botão clicado
+            document.getElementById(`maintenance-btn-${sectionId}`).classList.add('active');
+            
+            // Adicionar classe active à seção correspondente
+            document.getElementById(`maintenance-section-${sectionId}`).classList.add('active');
+            
+            // Se for a seção de histórico, carregar os dados
+            if (sectionId === 'historico') {
+                loadMaintenanceHistory();
+            }
+        }
+
+        // Função para carregar histórico de manutenções
+        function loadMaintenanceHistory() {
+            const tbody = document.getElementById('maintenance-history-body');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+            
+            maintenanceHistory.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.os}</td>
+                    <td>${item.equipment}</td>
+                    <td>${item.type}</td>
+                    <td>${item.date}</td>
+                    <td>${item.technician}</td>
+                    <td><span class="status-badge status-low">${item.status}</span></td>
+                    <td>${item.cost}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="viewMaintenanceDetails('${item.os}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Função para adicionar nova manutenção ao histórico
+        function addMaintenanceToHistory(data) {
+            const newMaintenance = {
+                os: data.osNumber,
+                equipment: data.equipment,
+                type: data.type,
+                date: data.date,
+                technician: data.technician,
+                status: data.status === 'concluido' ? 'Concluído' : 
+                       data.status === 'pendente' ? 'Pendente' : 'Aguardando Peças',
+                cost: data.cost ? `R$ ${parseFloat(data.cost).toFixed(2).replace('.', ',')}` : 'R$ 0,00'
+            };
+            
+            maintenanceHistory.unshift(newMaintenance);
+            
+            // Atualizar a tabela se estiver visível
+            if (document.getElementById('maintenance-section-historico').classList.contains('active')) {
+                loadMaintenanceHistory();
+            }
+            
+            // Atualizar métricas
+            updateMaintenanceMetrics();
+            
+            return newMaintenance;
+        }
+
+        // Função para atualizar métricas de manutenção
+        function updateMaintenanceMetrics() {
+            const totalConcluidas = maintenanceHistory.filter(item => item.status === 'Concluído').length;
+            
+            // Atualizar apenas o valor das concluídas (os outros podem ser estáticos para demonstração)
+            const concluidasElement = document.querySelector('.maintenance-metric-card:nth-child(2) .maintenance-metric-value');
+            if (concluidasElement) concluidasElement.textContent = totalConcluidas;
+        }
+
+        // Função para visualizar detalhes da manutenção
+        function viewMaintenanceDetails(osNumber) {
+            const maintenance = maintenanceHistory.find(item => item.os === osNumber);
+            if (maintenance) {
+                alert(`Detalhes da Manutenção:\n\nOS: ${maintenance.os}\nEquipamento: ${maintenance.equipment}\nTipo: ${maintenance.type}\nData: ${maintenance.date}\nTécnico: ${maintenance.technician}\nStatus: ${maintenance.status}\nCusto: ${maintenance.cost}`);
+            }
+        }
+
+        // Função para atender manutenção pendente
+        function atenderManutencao(osNumber) {
+            if (confirm(`Deseja atender a manutenção ${osNumber}?\n\nVocê será redirecionado para a tela de registro.`)) {
+                switchMaintenanceSection('registrar');
+                // Preencher automaticamente o número da OS
+                document.getElementById('maintenance-os-number').value = osNumber;
+            }
+        }
+
+        // Inicializar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar data atual no campo de data
+            const today = new Date().toISOString().split('T')[0];
+            const maintenanceDate = document.getElementById('maintenance-date');
+            if (maintenanceDate) maintenanceDate.value = today;
+            
+            // Carregar histórico inicial
+            loadMaintenanceHistory();
+            
+            // Configurar evento de submit para o formulário de registro de manutenção
+            const maintenanceRegisterForm = document.getElementById('maintenance-register-form');
+            if (maintenanceRegisterForm) {
+                maintenanceRegisterForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const osNumber = document.getElementById('maintenance-os-number').value;
+                    const equipment = document.getElementById('maintenance-equipment').value;
+                    const type = document.getElementById('maintenance-type').value;
+                    const date = document.getElementById('maintenance-date').value;
+                    const technician = document.getElementById('maintenance-technician').value;
+                    const duration = document.getElementById('maintenance-duration').value;
+                    const problem = document.getElementById('maintenance-problem').value;
+                    const solution = document.getElementById('maintenance-solution').value;
+                    const status = document.getElementById('maintenance-status').value;
+                    const cost = document.getElementById('maintenance-cost').value;
+                    
+                    // Formatar data
+                    const formattedDate = new Date(date).toLocaleDateString('pt-BR');
+                    
+                    // Adicionar ao histórico
+                    const newMaintenance = addMaintenanceToHistory({
+                        osNumber,
+                        equipment: document.querySelector(`#maintenance-equipment option[value="${equipment}"]`).textContent,
+                        type: document.querySelector(`#maintenance-type option[value="${type}"]`).textContent,
+                        date: formattedDate,
+                        technician,
+                        status,
+                        cost
+                    });
+                    
+                    // Mostrar mensagem de sucesso
+                    alert(`Manutenção registrada com sucesso!\n\nOS: ${osNumber}\nEquipamento: ${newMaintenance.equipment}\nTécnico: ${technician}\nDuração: ${duration} horas\nStatus: ${newMaintenance.status}\n\nRegistro adicionado ao histórico.`);
+                    
+                    // Limpar formulário
+                    maintenanceRegisterForm.reset();
+                    
+                    // Atualizar data para hoje
+                    document.getElementById('maintenance-date').value = today;
+                    
+                    // Alternar para a aba de histórico
+                    switchMaintenanceSection('historico');
+                });
+            }
+            
+            // Configurar botão de logout
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('Deseja realmente sair do sistema?')) {
+                        window.location.href = 'login.html';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
