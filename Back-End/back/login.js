@@ -1,15 +1,10 @@
-// SISTEMA DE AUTENTICAÇÃO CORRIGIDO
+// SISTEMA DE AUTENTICAÇÃO - VERSÃO GARANTIDA
 class SimpleAuthSystem {
     constructor() {
         console.log('🔧 Inicializando sistema de autenticação...');
+        // SEMPRE FORÇA RECRIAÇÃO DOS USUÁRIOS PARA GARANTIR
+        this.forceResetUsersGuaranteed();
         this.users = this.loadUsersFromStorage();
-        
-        if (this.users.length === 0) {
-            console.log('📝 Nenhum usuário encontrado. Criando usuários padrão...');
-            this.initializeDefaultUsers();
-        } else {
-            console.log(`✅ ${this.users.length} usuário(s) carregado(s) do storage`);
-        }
     }
 
     loadUsersFromStorage() {
@@ -17,7 +12,7 @@ class SimpleAuthSystem {
             const storedUsers = localStorage.getItem('system_users');
             if (storedUsers) {
                 const users = JSON.parse(storedUsers);
-                console.log('📦 Usuários carregados:', users);
+                console.log('📦 Usuários carregados:', users.map(u => u.username));
                 return users;
             }
         } catch (error) {
@@ -29,17 +24,17 @@ class SimpleAuthSystem {
     saveUsersToStorage() {
         try {
             localStorage.setItem('system_users', JSON.stringify(this.users));
-            console.log('💾 Usuários salvos no storage:', this.users);
+            console.log('💾 Usuários salvos:', this.users.map(u => u.username));
         } catch (error) {
             console.error('❌ Erro ao salvar usuários:', error);
         }
     }
 
-    initializeDefaultUsers() {
-        console.log('👥 Criando usuários padrão...');
+    // FUNÇÃO GARANTIDA - SEMPRE CRIA OS 4 USUÁRIOS
+    forceResetUsersGuaranteed() {
+        console.log('🔄 Garantindo criação dos 4 usuários...');
         
-        // USUÁRIOS PADRÃO - CORRIGIDOS
-        this.users = [
+        const defaultUsers = [
             {
                 id: 1,
                 username: "funcionario",
@@ -62,31 +57,42 @@ class SimpleAuthSystem {
                 id: 3,
                 username: "admin",
                 password: "123456",
-                type: "admin", // MUDEI PARA "admin" EM VEZ DE "manager"
+                type: "admin",
                 name: "Administrador",
                 email: "admin@empresa.com",
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 4,
+                username: "manutencao",
+                password: "123456",
+                type: "maintenance",
+                name: "Carlos Técnico",
+                email: "manutencao@empresa.com",
                 createdAt: new Date().toISOString()
             }
         ];
 
-        this.saveUsersToStorage();
-        console.log("✅ Usuários padrão criados com sucesso!");
-        console.log("📋 Lista de usuários:", this.users);
+        // SEMPRE SALVA OS 4 USUÁRIOS
+        localStorage.setItem('system_users', JSON.stringify(defaultUsers));
+        console.log('✅ 4 usuários garantidos no localStorage');
+        return defaultUsers;
     }
 
     authenticate(username, password) {
-        console.log(`🔐 Tentando autenticar: ${username}`);
+        console.log(`🔐 Autenticando: ${username}`);
         
+        // Carrega usuários do localStorage (sempre atual)
+        this.users = this.loadUsersFromStorage();
         const user = this.users.find(u => u.username === username);
-        console.log('👤 Usuário encontrado:', user);
-
+        
         if (!user) {
-            console.log('❌ Usuário não encontrado');
+            console.log(`❌ Usuário "${username}" não encontrado. Usuários disponíveis:`, this.users.map(u => u.username));
             return { success: false, message: "Usuário não encontrado" };
         }
 
         if (user.password === password) {
-            console.log('✅ Senha correta! Login bem-sucedido');
+            console.log(`✅ Login bem-sucedido para: ${username} (${user.type})`);
             return { 
                 success: true, 
                 user: {
@@ -102,120 +108,94 @@ class SimpleAuthSystem {
             return { success: false, message: "Senha incorreta" };
         }
     }
-
-    // Método para forçar recriação dos usuários (para debug)
-    forceResetUsers() {
-        console.log('🔄 Forçando reset dos usuários...');
-        localStorage.removeItem('system_users');
-        this.initializeDefaultUsers();
-    }
 }
 
-// Inicializar sistema
+// INICIALIZAÇÃO GARANTIDA
 const authSystem = new SimpleAuthSystem();
 
 function login(username, password) {
-    console.log(`🚀 Iniciando login para: ${username}`);
+    console.log(`🚀 Login solicitado: ${username}`);
     
     const result = authSystem.authenticate(username, password);
     
     if (result.success) {
-        // Limpar qualquer sessão anterior
+        // Limpa e salva dados
         localStorage.clear();
-        
-        // Salvar dados do usuário no localStorage
         localStorage.setItem('loggedIn', 'true');
         localStorage.setItem('userType', result.user.type);
         localStorage.setItem('username', result.user.username);
         localStorage.setItem('userName', result.user.name);
         localStorage.setItem('userId', result.user.id);
         
-        if (result.user.email) {
-            localStorage.setItem('userEmail', result.user.email);
-        }
+        console.log('✅ Dados salvos. userType:', result.user.type);
         
-        console.log('✅ Dados salvos no localStorage:', {
-            loggedIn: localStorage.getItem('loggedIn'),
-            userType: localStorage.getItem('userType'),
-            username: localStorage.getItem('username'),
-            userName: localStorage.getItem('userName')
-        });
-        
-        alert('✅ Login realizado com sucesso!');
-        
-        // REDIRECIONAMENTO CORRIGIDO - Baseado no tipo de usuário
-        const userType = result.user.type;
-        console.log(`🎯 Redirecionando usuário tipo: ${userType}`);
-        
-        switch(userType) {
+        // Redirecionamento
+        switch(result.user.type) {
             case 'manager':
             case 'admin':
-                console.log('👔 Redirecionando para dashboard de gerente/admin');
+                console.log('👔 Redirecionando para gerente.html');
                 window.location.href = 'gerente.html';
                 break;
             case 'employee':
-                console.log('👷 Redirecionando para dashboard de funcionário');
+                console.log('👷 Redirecionando para funcionario.html');
                 window.location.href = 'funcionario.html';
                 break;
+            case 'maintenance':
+                console.log('🔧 Redirecionando para manutencao.html');
+                window.location.href = 'manutencao.html';
+                break;
             default:
-                console.log('❓ Tipo de usuário desconhecido, redirecionando para página padrão');
+                console.log('❓ Redirecionando padrão para funcionario.html');
                 window.location.href = 'funcionario.html';
         }
     } else {
-        console.log('❌ Falha no login:', result.message);
-        alert('❌ Erro no login: ' + result.message);
+        console.log('❌ Falha no login');
+        alert('❌ ' + result.message);
     }
 }
 
 function fillDemoAccount(username, password) {
     document.getElementById('username').value = username;
     document.getElementById('password').value = password;
-    console.log(`📝 Preenchendo dados: ${username} / ${password}`);
 }
 
 function updateDebugInfo() {
     const debugContent = document.getElementById('debug-content');
     const users = authSystem.loadUsersFromStorage();
     
-    let debugHTML = `
-        <div>Usuários no sistema: ${users.length}</div>
-        <div>Usuários: ${users.map(u => u.username).join(', ')}</div>
-        <div>Storage key: ${localStorage.getItem('system_users') ? 'Presente' : 'Ausente'}</div>
-        <div>Current loggedIn: ${localStorage.getItem('loggedIn')}</div>
-        <div>Current userType: ${localStorage.getItem('userType')}</div>
+    debugContent.innerHTML = `
+        <div>Usuários: ${users.length}</div>
+        <div>${users.map(u => `<div>${u.username} (${u.type})</div>`).join('')}</div>
+        <div>Storage: ${localStorage.getItem('system_users') ? 'OK' : 'Vazio'}</div>
     `;
-    
-    debugContent.innerHTML = debugHTML;
 }
 
-// Configurar eventos quando a página carregar
+// QUANDO A PÁGINA CARREGAR
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Sistema de login carregado!');
+    console.log('🚀 Login carregado');
     
-    // Mostrar informações de debug
+    // Mostra debug info
     updateDebugInfo();
     
-    // Preencher automaticamente com a conta do gerente para facilitar
-    fillDemoAccount('gerente', '123456');
+    // Preenche com manutencao automaticamente
+    fillDemoAccount('manutencao', '123456');
     
-    // Evento do formulário de login
+    // Configura formulário
     document.getElementById('login-form').addEventListener('submit', function(e) {
         e.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         
         if (!username || !password) {
-            alert('⚠️ Por favor, preencha todos os campos!');
+            alert('⚠️ Preencha todos os campos!');
             return;
         }
         
-        console.log(`📤 Submetendo login: ${username}`);
         login(username, password);
     });
 
-    // Eventos para as contas de demonstração
-    const demoAccounts = document.querySelectorAll('.demo-account');
-    demoAccounts.forEach(account => {
+    // Configura contas demo
+    document.querySelectorAll('.demo-account').forEach(account => {
         account.addEventListener('click', function() {
             const username = this.getAttribute('data-user');
             const password = this.getAttribute('data-pass');
@@ -223,24 +203,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Botão de reset (para debug)
-    const debugDiv = document.getElementById('debug-info');
+    // Botão de reset
     const resetBtn = document.createElement('button');
-    resetBtn.textContent = 'Resetar Usuários';
+    resetBtn.textContent = 'Forçar Recriação de Usuários';
     resetBtn.className = 'btn btn-secondary';
-    resetBtn.style.marginTop = '10px';
-    resetBtn.style.fontSize = '0.8rem';
-    resetBtn.style.padding = '0.5rem 1rem';
+    resetBtn.style.cssText = 'margin-top:10px; font-size:0.8rem; padding:0.5rem 1rem; width:100%;';
     resetBtn.addEventListener('click', function() {
-        authSystem.forceResetUsers();
+        localStorage.clear();
+        authSystem.forceResetUsersGuaranteed();
         updateDebugInfo();
-        alert('🔄 Usuários resetados! Use: funcionario/123456 ou gerente/123456');
-        // Preencher com gerente após reset
-        fillDemoAccount('gerente', '123456');
+        alert('🔄 Usuários recriados! Agora tente login com "manutencao" / "123456"');
+        fillDemoAccount('manutencao', '123456');
     });
-    debugDiv.appendChild(resetBtn);
-
-    console.log('✅ Sistema pronto!');
-    console.log('👔 Use: gerente / 123456 para acesso de gerente');
-    console.log('👤 Use: funcionario / 123456 para acesso de funcionário');
+    document.getElementById('debug-info').appendChild(resetBtn);
+    
+    console.log('✅ Login pronto para uso');
+    console.log('🔧 Use: manutencao / 123456');
 });
