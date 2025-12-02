@@ -418,8 +418,8 @@ var saidaMaterial = false;
                 const response = await fetch("http://localhost:1111/nova-solicitacao");
                 const solicitacoes = await response.json();
 
-                const pendentes = solicitacoes.filter(s => s.status === "pendente").length;
-                const aprovadas = solicitacoes.filter(s => s.status === "concluidas").length;
+                const pendentes = solicitacoes.filter(s => s.status === "PENDENTES").length;
+                const aprovadas = solicitacoes.filter(s => s.status === "CONCLUIDAS").length;
 
                 document.getElementById("metric-pendentes").textContent = pendentes;
                 document.getElementById("metric-concluidas").textContent = aprovadas;
