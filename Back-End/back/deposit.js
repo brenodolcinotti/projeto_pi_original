@@ -405,7 +405,30 @@ var saidaMaterial = false;
             // Ativar seção e botão correspondentes
             document.getElementById(`employee-section-${sectionName}`).classList.add('active');
             document.getElementById(`employee-btn-${sectionName}`).classList.add('active');
+
+            if (sectionName === "solicitacoes") {
+                loadEmployeeMetrics();
+            }
+
         }
+
+        //função para puxar do banco 
+        async function loadEmployeeMetrics() {
+             try {
+                const response = await fetch("http://localhost:1111/nova-solicitacao");
+                const solicitacoes = await response.json();
+
+                const pendentes = solicitacoes.filter(s => s.status === "pendente").length;
+                const aprovadas = solicitacoes.filter(s => s.status === "concluidas").length;
+
+                document.getElementById("metric-pendentes").textContent = pendentes;
+                document.getElementById("metric-concluidas").textContent = aprovadas;
+
+            } catch (error) {
+                console.error("Erro ao carregar métricas:", error);
+            }
+}
+
 
         function setManagerTransactionType(type) {
             const depositBtn = document.getElementById('manager-deposit-btn');

@@ -54,36 +54,34 @@
                     </button>
                 </div>
 
+                <!--HTML dos cards que puxa em tempo real-->
                 <div class="employee-section active" id="employee-section-solicitacoes">
                     <div class="employee-metrics">
+
+                        <!-- Solicitações Pendentes -->
                         <div class="employee-metric-card">
                             <div class="employee-metric-header">
                                 <div class="employee-metric-icon">
                                     <i class="fas fa-clock"></i>
                                 </div>
                             </div>
-                            <div class="employee-metric-value">3</div>
+                            <div class="employee-metric-value" id="metric-pendentes">0</div>
                             <div class="employee-metric-label">Solicitações Pendentes</div>
                         </div>
+
+                        <!-- Solicitações Aprovadas -->
                         <div class="employee-metric-card">
                             <div class="employee-metric-header">
                                 <div class="employee-metric-icon">
                                     <i class="fas fa-check-circle"></i>
                                 </div>
                             </div>
-                            <div class="employee-metric-value">18</div>
-                            <div class="employee-metric-label">Solicitações Aprovadas</div>
-                        </div>
-                        <div class="employee-metric-card">
-                            <div class="employee-metric-header">
-                                <div class="employee-metric-icon">
-                                    <i class="fas fa-tools"></i>
-                                </div>
-                            </div>
-                            <div class="employee-metric-value">24</div>
-                            <div class="employee-metric-label">Itens Solicitados</div>
+                            <div class="employee-metric-value" id="metric-concluidas">0</div>
+                            <div class="employee-metric-label">Solicitações Concluídas</div>
                         </div>
                     </div>
+                </div>
+
 
                     <div class="card employee-card">
                         <h2 class="card-title employee-title">Minhas Solicitações Recentes</h2>
