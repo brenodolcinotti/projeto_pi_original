@@ -140,7 +140,7 @@
                 alert('✅ Login realizado com sucesso!');
                 
                 // Redirecionar para a página principal
-                window.location.href = 'deposit.html';
+                window.location.href = 'funcionario.html';
             } else {
                 console.log('❌ Falha no login:', result.message);
                 alert('❌ Erro no login: ' + result.message);
