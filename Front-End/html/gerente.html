@@ -10,17 +10,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <header id="main-header">
+    <header id="main-header" class="manager-mode">
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <div class="logo-icon" id="logo-icon">SLA</div>
+                    <div class="logo-icon manager" id="logo-icon">SLA</div>
                     <h1>Sistema de <span>Logística e Armazenamento</span></h1>
                 </div>
-                <div class="user-info" id="user-info">
-                    <span id="user-name">Usuário</span>
-                    <span class="user-type" id="user-type-display">Gerente</span>
-                    <a href="#" class="btn btn-danger" id="logout-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                <div class="user-info manager" id="user-info">
+                    <span id="user-name">Gerente</span>
+                    <span class="user-type manager" id="user-type-display">Gerente</span>
+                    <a href="login.html" class="btn btn-danger" id="logout-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
                         <i class="fas fa-sign-out-alt"></i>
                         Sair
                     </a>
@@ -46,13 +46,14 @@
                 </div>
 
                 <div class="manager-controls">
-                    <button class="control-btn active" id="btn-movimentacoes" onclick="switchSection('movimentacoes')">
-                        <i class="fas fa-chart-line"></i>
-                        Movimentações
+                    <button class="control-btn active" id="btn-relatorios" onclick="switchSection('relatorios')">
+                        <i class="fas fa-chart-bar"></i>
+                        Relatório
                     </button>
-                    </div>
+                </div>
 
-                <div class="section active" id="section-movimentacoes">
+                <!-- Seção Relatório -->
+                <div class="section active" id="section-relatorios">
                     <div class="manager-metrics">
                         <div class="metric-card">
                             <div class="metric-header">
@@ -80,6 +81,15 @@
                             </div>
                             <div class="metric-value">1.247</div>
                             <div class="metric-label">Itens em Estoque</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-header">
+                                <div class="metric-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                            <div class="metric-value">42</div>
+                            <div class="metric-label">Funcionários Ativos</div>
                         </div>
                     </div>
 
@@ -116,7 +126,7 @@
                     </div>
 
                     <div class="card manager-card">
-                        <h2 class="card-title manager-title">Movimentações Recentes</h2>
+                        <h2 class="card-title manager-title">Relatório Completo</h2>
                         
                         <table class="advanced-table">
                             <thead>
@@ -126,7 +136,9 @@
                                     <th>Tipo</th>
                                     <th>Material</th>
                                     <th>Quantidade</th>
+                                    <th>Valor</th>
                                     <th>Status</th>
+                                    <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -136,7 +148,13 @@
                                     <td><span class="badge badge-success"><i class="fas fa-arrow-down"></i> Entrada</span></td>
                                     <td>Ferramentas</td>
                                     <td>50</td>
+                                    <td>R$ 2.500</td>
                                     <td><span class="status-badge status-low">Concluído</span></td>
+                                    <td>
+                                        <button class="btn btn-secondary btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>15/10/2023 11:15</td>
@@ -144,17 +162,238 @@
                                     <td><span class="badge badge-danger"><i class="fas fa-arrow-up"></i> Saída</span></td>
                                     <td>Componentes Eletrônicos</td>
                                     <td>25</td>
+                                    <td>R$ 3.750</td>
                                     <td><span class="status-badge status-high">Pendente</span></td>
+                                    <td>
+                                        <button class="btn btn-secondary btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>14/10/2023 16:20</td>
+                                    <td>Carlos Oliveira</td>
+                                    <td><span class="badge badge-success"><i class="fas fa-arrow-down"></i> Entrada</span></td>
+                                    <td>EPIs</td>
+                                    <td>100</td>
+                                    <td>R$ 5.000</td>
+                                    <td><span class="status-badge status-low">Concluído</span></td>
+                                    <td>
+                                        <button class="btn btn-secondary btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>14/10/2023 09:45</td>
+                                    <td>Ana Paula</td>
+                                    <td><span class="badge badge-danger"><i class="fas fa-arrow-up"></i> Saída</span></td>
+                                    <td>Materiais de Escritório</td>
+                                    <td>35</td>
+                                    <td>R$ 1.750</td>
+                                    <td><span class="status-badge status-low">Concluído</span></td>
+                                    <td>
+                                        <button class="btn btn-secondary btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
 
-    <script src="../../Back-End/back/deposit.js"></script>
+    <script>
+        // Função para verificar autenticação - VERSÃO FINAL
+        function checkAuthentication() {
+            const userType = localStorage.getItem('userType');
+            const userName = localStorage.getItem('userName');
+            const loggedIn = localStorage.getItem('loggedIn');
+            
+            console.log('=== VERIFICAÇÃO DE AUTENTICAÇÃO ===');
+            console.log('loggedIn:', loggedIn);
+            console.log('userType:', userType);
+            console.log('userName:', userName);
+            console.log('==============================');
+            
+            // DEBUG: Mostrar todo o localStorage
+            console.log('Todo localStorage:');
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                console.log(`${key}: ${localStorage.getItem(key)}`);
+            }
+            
+            // Verificar se está logado
+            if (!loggedIn || loggedIn !== 'true') {
+                console.log('❌ Usuário não está logado');
+                alert('Sessão expirada! Faça login novamente.');
+                window.location.href = 'login.html';
+                return false;
+            }
+            
+            // Verificar se é gerente (manager) OU admin
+            const allowedTypes = ['manager', 'admin'];
+            if (!allowedTypes.includes(userType)) {
+                console.log(`❌ Tipo de usuário não permitido: ${userType}`);
+                alert('Acesso negado! Esta área é apenas para gerentes.');
+                window.location.href = 'login.html';
+                return false;
+            }
+            
+            console.log('✅ Autenticação válida!');
+            return true;
+        }
+
+        // Função para alternar entre seções (mantida para compatibilidade, mas só tem uma seção agora)
+        function switchSection(sectionId) {
+            // Remover classe active de todos os botões
+            document.querySelectorAll('.control-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Remover classe active de todas as seções
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Adicionar classe active ao botão clicado
+            document.getElementById(`btn-${sectionId}`).classList.add('active');
+            
+            // Adicionar classe active à seção correspondente
+            document.getElementById(`section-${sectionId}`).classList.add('active');
+        }
+
+        // Função para gerar gráficos
+        function initializeCharts() {
+            // Gráfico de movimentações por categoria
+            const categoryCtx = document.getElementById('categoryChart');
+            if (categoryCtx) {
+                new Chart(categoryCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Ferramentas', 'Componentes', 'EPI', 'Mat. Escritório', 'Outros'],
+                        datasets: [{
+                            data: [30, 25, 20, 15, 10],
+                            backgroundColor: [
+                                '#3b82f6',
+                                '#10b981',
+                                '#f59e0b',
+                                '#8b5cf6',
+                                '#ef4444'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#e2e8f0',
+                                    padding: 20
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Gráfico de status do estoque
+            const inventoryCtx = document.getElementById('inventoryChart');
+            if (inventoryCtx) {
+                new Chart(inventoryCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                        datasets: [{
+                            label: 'Entradas',
+                            data: [65, 59, 80, 81, 56, 55],
+                            backgroundColor: '#10b981',
+                            borderColor: '#0da271',
+                            borderWidth: 1
+                        }, {
+                            label: 'Saídas',
+                            data: [28, 48, 40, 19, 86, 27],
+                            backgroundColor: '#ef4444',
+                            borderColor: '#dc2626',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: '#94a3b8'
+                                },
+                                grid: {
+                                    color: '#334155'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#94a3b8'
+                                },
+                                grid: {
+                                    color: '#334155'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#e2e8f0'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Configurar logout
+        document.getElementById('logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Deseja realmente sair do sistema?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Configurar botão de gerar PDF
+        document.getElementById('generate-pdf-btn').addEventListener('click', function() {
+            alert('📊 Relatório PDF gerado com sucesso!');
+            // Implemente a geração de PDF aqui
+        });
+
+        // Inicializar quando o DOM carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📋 Página do gerente carregada');
+            
+            // Primeiro verificar autenticação
+            const isAuthenticated = checkAuthentication();
+            
+            if (isAuthenticated) {
+                // Atualizar nome do usuário se existir
+                const userName = localStorage.getItem('userName');
+                if (userName) {
+                    document.getElementById('user-name').textContent = userName;
+                    document.getElementById('welcome-user').textContent = `Bem-vindo, ${userName}!`;
+                }
+                
+                // Mostrar dashboard
+                document.getElementById('manager-dashboard').style.display = 'block';
+                
+                // Inicializar gráficos
+                initializeCharts();
+                
+                console.log('✅ Dashboard do gerente inicializado com sucesso!');
+            }
+        });
+    </script>
 </body>
 </html>
