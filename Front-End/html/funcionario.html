@@ -17,12 +17,14 @@
                     <div class="logo-icon" id="logo-icon">SLA</div>
                     <h1>Sistema de <span>Logística e Armazenamento</span></h1>
                 </div>
-                <div class="user-info" id="user-info">
-                    <span id="">Usuário</span>
-                    <span class="user-type" id="user-type-display">Funcionário</span>
-                    <a href="login.html" class="btn btn-danger" id="logout-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                    <div class="user-info employee" id="user-info">
+                    <span id="user-name">Usuário</span>
+                    <span class="user-type employee" id="user-type-display">Funcionário</span>
+                    <!-- BOTÃO SAIR CORRIGIDO -->
+                    <button class="btn btn-danger" onclick="sairDoSistema()" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
                         <i class="fas fa-sign-out-alt"></i>
                         Sair
+                    </button>
                     </a>
                 </div>
             </div>
@@ -54,33 +56,36 @@
                     </button>
                 </div>
 
-                <!--HTML dos cards que puxa em tempo real-->
                 <div class="employee-section active" id="employee-section-solicitacoes">
                     <div class="employee-metrics">
-
-                        <!-- Solicitações Pendentes -->
                         <div class="employee-metric-card">
                             <div class="employee-metric-header">
                                 <div class="employee-metric-icon">
                                     <i class="fas fa-clock"></i>
                                 </div>
                             </div>
-                            <div class="employee-metric-value" id="metric-pendentes">0</div>
+                            <div class="employee-metric-value">3</div>
                             <div class="employee-metric-label">Solicitações Pendentes</div>
                         </div>
-
-                        <!-- Solicitações Aprovadas -->
                         <div class="employee-metric-card">
                             <div class="employee-metric-header">
                                 <div class="employee-metric-icon">
                                     <i class="fas fa-check-circle"></i>
                                 </div>
                             </div>
-                            <div class="employee-metric-value" id="metric-concluidas">0</div>
-                            <div class="employee-metric-label">Solicitações Concluídas</div>
+                            <div class="employee-metric-value">18</div>
+                            <div class="employee-metric-label">Solicitações Aprovadas</div>
+                        </div>
+                        <div class="employee-metric-card">
+                            <div class="employee-metric-header">
+                                <div class="employee-metric-icon">
+                                    <i class="fas fa-tools"></i>
+                                </div>
+                            </div>
+                            <div class="employee-metric-value">24</div>
+                            <div class="employee-metric-label">Itens Solicitados</div>
                         </div>
                     </div>
-                </div>
 
                     <div class="card employee-card">
                         <h2 class="card-title employee-title">Minhas Solicitações Recentes</h2>

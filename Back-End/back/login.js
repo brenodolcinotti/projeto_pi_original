@@ -102,28 +102,10 @@ class SimpleAuthSystem {
                     type: user.type,
                     email: user.email
                 }
-<<<<<<< HEAD
-                
-                console.log('✅ Dados salvos no localStorage:', {
-                    loggedIn: localStorage.getItem('loggedIn'),
-                    userType: localStorage.getItem('userType'),
-                    username: localStorage.getItem('username')
-                });
-                
-                alert('✅ Login realizado com sucesso!');
-                
-                // Redirecionar para a página principal
-                window.location.href = 'funcionario.html';
-            } else {
-                console.log('❌ Falha no login:', result.message);
-                alert('❌ Erro no login: ' + result.message);
-            }
-=======
             };
         } else {
             console.log('❌ Senha incorreta');
             return { success: false, message: "Senha incorreta" };
->>>>>>> 1663993bb96824305256f58854dd6ae5e4658c67
         }
     }
 }
