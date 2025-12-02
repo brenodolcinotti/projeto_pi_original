@@ -93,7 +93,8 @@ public class dao {
                     rs.getString("data_solicitacao"), 
                     rs.getString("setor"), 
                     rs.getString("observacao"), 
-                    rs.getString("responsavel")
+                    rs.getString("responsavel"),
+                    rs.getString("status")
                     );
                     nova.add(novaSolicitacao);
             }

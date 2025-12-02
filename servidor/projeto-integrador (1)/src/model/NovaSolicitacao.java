@@ -8,24 +8,27 @@ public class NovaSolicitacao {
     private String setor;
     private String observacao;
     private String resposavel;
+    private String status;
 
 
-    public NovaSolicitacao(String item, String data_solicitacao, String setor, String observacao, String resposavel) {
+    public NovaSolicitacao(String item, String data_solicitacao, String setor, String observacao, String resposavel, String status) {
         this.item = item;
         this.data_solicitacao = data_solicitacao;
         this.setor = setor;
         this.observacao = observacao;
         this.resposavel = resposavel;
+        this.status = status;
     }
 
     public NovaSolicitacao(long id, String item, String data_solicitacao, String setor, String observacao,
-            String resposavel) {
+            String resposavel, String status) {
         this.id = id;
         this.item = item;
         this.data_solicitacao = data_solicitacao;
         this.setor = setor;
         this.observacao = observacao;
         this.resposavel = resposavel;
+        this.status = status;
     }
 
     public NovaSolicitacao() {
@@ -68,13 +71,18 @@ public class NovaSolicitacao {
         this.resposavel = resposavel;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "NovaSolicitacao [id=" + id + ", item=" + item + ", data_solicitacao=" + data_solicitacao + ", setor="
-                + setor + ", observacao=" + observacao + ", resposavel=" + resposavel + "]";
+                + setor + ", observacao=" + observacao + ", resposavel=" + resposavel + ", status=" + status + "]";
     }
-
-    
-
     
 }
