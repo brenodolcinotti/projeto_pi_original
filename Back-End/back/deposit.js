@@ -391,26 +391,35 @@ var saidaMaterial = false;
             document.getElementById(`btn-${sectionName}`).classList.add('active');
         }
 
+
         function switchEmployeeSection(sectionName) {
             // Desativar todas as seções
             document.querySelectorAll('.employee-section').forEach(section => {
                 section.classList.remove('active');
             });
-            
+
             // Desativar todos os botões
             document.querySelectorAll('.employee-control-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            
-            // Ativar seção e botão correspondentes
+
+            // Ativar a seção escolhida
             document.getElementById(`employee-section-${sectionName}`).classList.add('active');
+
+            // Ativar o botão correspondente
             document.getElementById(`employee-btn-${sectionName}`).classList.add('active');
 
-            if (sectionName === "solicitacoes") {
-                loadEmployeeMetrics();
-            }
+            // ✅ AQUI ESTÁ A REGRA QUE ESCONDE OU MOSTRA O CARD
+            const card = document.getElementById("card-nova-solicitacao");
 
+            if (sectionName === "movimentacao") {
+                card.style.display = "none";   // some nas movimentações ✅
+            } else {
+                card.style.display = "block";  // aparece nas solicitações ✅
+            }
         }
+
+
 
         function setManagerTransactionType(type) {
             const depositBtn = document.getElementById('manager-deposit-btn');
