@@ -391,6 +391,7 @@ var saidaMaterial = false;
             document.getElementById(`btn-${sectionName}`).classList.add('active');
         }
 
+
         function switchEmployeeSection(sectionName) {
             // Desativar todas as seções
             document.querySelectorAll('.employee-section').forEach(section => {
@@ -405,12 +406,26 @@ var saidaMaterial = false;
             // Ativar seção e botão correspondentes
             document.getElementById(`employee-section-${sectionName}`).classList.add('active');
             document.getElementById(`employee-btn-${sectionName}`).classList.add('active');
-
+        
+            // ✅ CONTROLE DOS DOIS CARDS
+            const cardNova = document.getElementById("card-nova-solicitacao");
+            const cardMinhas = document.getElementById("card-minhas-solicitacoes");
+        
+            if (sectionName === "movimentacao") {
+                cardNova.style.display = "none";     // esconde Nova Solicitação
+                cardMinhas.style.display = "none";   // esconde Minhas Solicitações ✅
+            } else {
+                cardNova.style.display = "block";    // mostra Nova Solicitação
+                cardMinhas.style.display = "block";  // mostra Minhas Solicitações ✅
+            }
+        
+            // sua regra original continua intacta ✅
             if (sectionName === "solicitacoes") {
                 loadEmployeeMetrics();
             }
-
         }
+
+
 
         function setManagerTransactionType(type) {
             const depositBtn = document.getElementById('manager-deposit-btn');
