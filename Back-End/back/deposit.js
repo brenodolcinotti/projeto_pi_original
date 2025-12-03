@@ -397,25 +397,31 @@ var saidaMaterial = false;
             document.querySelectorAll('.employee-section').forEach(section => {
                 section.classList.remove('active');
             });
-
+            
             // Desativar todos os botões
             document.querySelectorAll('.employee-control-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-
-            // Ativar a seção escolhida
+            
+            // Ativar seção e botão correspondentes
             document.getElementById(`employee-section-${sectionName}`).classList.add('active');
-
-            // Ativar o botão correspondente
             document.getElementById(`employee-btn-${sectionName}`).classList.add('active');
-
-            // ✅ AQUI ESTÁ A REGRA QUE ESCONDE OU MOSTRA O CARD
-            const card = document.getElementById("card-nova-solicitacao");
-
+        
+            // ✅ CONTROLE DOS DOIS CARDS
+            const cardNova = document.getElementById("card-nova-solicitacao");
+            const cardMinhas = document.getElementById("card-minhas-solicitacoes");
+        
             if (sectionName === "movimentacao") {
-                card.style.display = "none";   // some nas movimentações ✅
+                cardNova.style.display = "none";     // esconde Nova Solicitação
+                cardMinhas.style.display = "none";   // esconde Minhas Solicitações ✅
             } else {
-                card.style.display = "block";  // aparece nas solicitações ✅
+                cardNova.style.display = "block";    // mostra Nova Solicitação
+                cardMinhas.style.display = "block";  // mostra Minhas Solicitações ✅
+            }
+        
+            // sua regra original continua intacta ✅
+            if (sectionName === "solicitacoes") {
+                loadEmployeeMetrics();
             }
         }
 
