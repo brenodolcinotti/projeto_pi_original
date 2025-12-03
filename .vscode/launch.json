@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "Api",
+            "request": "launch",
+            "mainClass": "api.Api",
+            "projectName": "projeto_pi_original_e4ece716"
+        },
+        {
             "type": "chrome",
             "request": "launch",
             "name": "Iniciar o Chrome em relação a localhost",

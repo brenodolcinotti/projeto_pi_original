@@ -10,6 +10,7 @@ import spark.Response;
 import com.google.gson.Gson;
 
 import model.EntradaEstoque;
+import model.Manutencao;
 import model.SaidaEstoque;
 import dao.dao;
 import dao.postDAO;
@@ -78,6 +79,21 @@ public class Api {
                 System.err.println("Erro ao processar requisição post" + e.getMessage());
                 e.printStackTrace();
                 return "Erro ao criar categoria";
+            }
+        });
+
+        post("/manutencao", (request, response) -> {
+            try{
+                Manutencao manutencao = gson.fromJson(request.body(), Manutencao.class);
+                postDAO.inserirManutencao(manutencao);
+
+                response.status(201);
+                return gson.toJson(manutencao);
+            }catch (Exception e){
+                response.status(500);
+                System.err.println("Erro ao processar requisição post" + e.getMessage());
+                e.printStackTrace();
+                return "Erro";
             }
         });
 

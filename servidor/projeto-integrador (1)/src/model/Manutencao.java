@@ -8,27 +8,30 @@ public class Manutencao {
     private String data_manutencao;
     private String setor;
     private String observacao;
-    private String resposavel;
+    private String responsavel;
+    private String tipo;
 
     public Manutencao(String item, int tempo_manutencao, String data_manutencao, String setor, String observacao,
-            String resposavel) {
+            String responsavel, String tipo) {
         this.item = item;
         this.tempo_manutencao = tempo_manutencao;
         this.data_manutencao = data_manutencao;
         this.setor = setor;
         this.observacao = observacao;
-        this.resposavel = resposavel;
+        this.responsavel = responsavel;
+        this.tipo = tipo;
     }
 
     public Manutencao(long id, String item, int tempo_manutencao, String data_manutencao, String setor,
-            String observacao, String resposavel) {
+            String observacao, String responsavel, String tipo) {
         this.id = id;
         this.item = item;
         this.tempo_manutencao = tempo_manutencao;
         this.data_manutencao = data_manutencao;
         this.setor = setor;
         this.observacao = observacao;
-        this.resposavel = resposavel;
+        this.responsavel = responsavel;
+        this.tipo = tipo;
     }
 
     public Manutencao() {
@@ -70,19 +73,30 @@ public class Manutencao {
     public void setObservacao(String observacao) {
         this.observacao = observacao;
     }
-    public String getResposavel() {
-        return resposavel;
+    public String getResponsavel() {
+        return responsavel;
     }
-    public void setResposavel(String resposavel) {
-        this.resposavel = resposavel;
+    public void setResponsavel(String responsavel) {
+        this.responsavel = responsavel;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     @Override
     public String toString() {
         return "Manutencao [id=" + id + ", item=" + item + ", tempo_manutencao=" + tempo_manutencao
                 + ", data_manutencao=" + data_manutencao + ", setor=" + setor + ", observacao=" + observacao
-                + ", resposavel=" + resposavel + "]";
+                + ", responsavel=" + responsavel + ", tipo=" + tipo + "]";
     }
+
+    
+    
 
     
     

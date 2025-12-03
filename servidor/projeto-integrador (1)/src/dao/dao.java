@@ -125,7 +125,8 @@ public class dao {
                     rs.getString("data_manutencao"),
                     rs.getString("setor"), 
                     rs.getString("observacao"), 
-                    rs.getString("responsavel")
+                    rs.getString("responsavel"),
+                    rs.getString("tipo")
                     );
                     manutencao.add(manutencaoNova);
             }
