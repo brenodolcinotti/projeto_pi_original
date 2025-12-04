@@ -643,4 +643,50 @@ carregarDadosEntrada();
 }
 loadEmployeeMetrics();
 
+//dom para mandar Nova Solicitação de Manutenção para o banco 
+document.addEventListener('DOMContentLoaded', function() {
+
+    document.getElementById("employee-maintenance-form").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        inserirManutencao = [];
+
+        const item = document.getElementById('employee-maintenance-item').value;
+        const responsavel = document.getElementById("employee-maintenance-responsavel").value;
+        const data_solicitacao = document.getElementById("employee-data-solicitacao").value;
+        const observacao = document.getElementById("maintenance-problem").value;
+        const setor = document.getElementById("maintenance-status").value;
+
+        if(!responsavel){
+                alert("Preencha o campo");
+                document.getElementById("maintenance-technician").focus();
+                return;
+        }
+
+        inserirManutencao = {
+            item: item,
+            responsavel: responsavel,
+            data_solicitacao: data_solicitacao,
+            setor: setor,
+            observacao: observacao,
+            status: "PENDENTE",
+    }
+        async function cadastrarDados(){
+
+        try {
+        const response = await fetch("http://localhost:1111/manutencao", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(inserirManutencao)
+        })
+        } catch (error) {
+            console.log(error)   
+        }
+        }
+
+    cadastrarDados();
+
+    })
+})
+
         

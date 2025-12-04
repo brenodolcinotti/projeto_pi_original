@@ -352,25 +352,13 @@
 
                                 <div class="form-group">
 
-                                    <label for="employee-maintenance-equipment">Equipamento</label>
+                                    <label for="employee-maintenance-item">Item</label>
 
                                     <div class="input-with-icon">
 
                                         <i class="input-icon fas fa-toolbox"></i>
 
-                                        <select id="employee-maintenance-equipment" required>
-
-                                            <option value="">Selecione o equipamento</option>
-
-                                            <option value="empilhadeira">Empilhadeira Elétrica</option>
-
-                                            <option value="esteira">Esteira Transportadora</option>
-
-                                            <option value="refrigeracao">Sistema de Refrigeração</option>
-
-                                            <option value="computador">Computador</option>
-
-                                        </select>
+                                        <input type="text" id="employee-maintenance-item" placeholder="Selecione o item para manutenção">
 
                                     </div>
 
@@ -380,19 +368,13 @@
 
                                 <div class="form-group">
 
-                                    <label for="employee-maintenance-type">Tipo de Manutenção</label>
+                                    <label for="employee-maintenance-responsavel">Responsavel</label>
 
                                     <div class="input-with-icon">
 
                                         <i class="input-icon fas fa-wrench"></i>
 
-                                        <select id="employee-maintenance-type" required>
-
-                                            <option value="preventiva">Preventiva</option>
-
-                                            <option value="corretiva">Corretiva</option>
-
-                                        </select>
+                                        <input type="text" id="employee-maintenance-responsavel" placeholder="Identifique o responsável">
 
                                     </div>
 
@@ -402,21 +384,13 @@
 
                                 <div class="form-group">
 
-                                    <label for="employee-maintenance-priority">Prioridade</label>
+                                    <label for="employee-data-solicitacao">Data de solicitação</label>
 
                                     <div class="input-with-icon">
 
                                         <i class="input-icon fas fa-flag"></i>
 
-                                        <select id="employee-maintenance-priority" required>
-
-                                            <option value="baixa">Baixa</option>
-
-                                            <option value="media">Média</option>
-
-                                            <option value="alta">Alta</option>
-
-                                        </select>
+                                        <input type="text" id="employee-data-solicitacao" placeholder="Selecione a data da solicitação">
 
                                     </div>
 
@@ -426,19 +400,35 @@
 
                                 <div class="form-group full-width">
 
-                                    <label for="employee-maintenance-description">Descrição do Problema</label>
+                                    <label for="employee-maintenance-setor">Setor</label>
 
                                     <div class="input-with-icon">
 
                                         <i class="input-icon fas fa-sticky-note"></i>
 
-                                        <textarea id="employee-maintenance-description" rows="3" placeholder="Descreva o problema ou serviço necessário" required></textarea>
+                                        <input type="text" id="employee-maintenance-setor" placeholder="Selecione seu setor">
 
                                     </div>
 
                                 </div>
 
                             </div>
+
+                            <div class="form-group full-width">
+
+                                <label for="employee-maintenance-observacoes">Observações</label>
+
+                                <div class="input-with-icon">
+
+                                    <i class="input-icon fas fa-sticky-note"></i>
+
+                                    <input type="text" id="employee-maintenance-observacoes" placeholder="Digite as observações">
+
+                                </div>
+
+                            </div>
+
+                        </div>
 
                            
 
