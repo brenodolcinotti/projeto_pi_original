@@ -276,58 +276,20 @@
                 solicitacoes = data1;
                 dadosManutencao = data;
 
-                console.log('Dados recebidos do servidor:', {
-                    totalSolicitacoes: solicitacoes.length,
-                    todasSolicitacoes: solicitacoes,
-                    manutencoes: dadosManutencao.length
-                });
-
-                // Contar TODOS os pendentes (verificar todos os status possíveis)
-                const todosPendentes = solicitacoes.filter(s => {
-                    const status = (s.status || '').toUpperCase();
-                    return status === "PENDENTE" || 
-                           status === "PENDENTE " || // Com espaço
-                           status === "PENDENTES" || // Plural
-                           status === "PENDÊNTE" || // Com acento
-                           !status || // Se não tiver status
-                           status === "" || // String vazia
-                           status === null || // Null
-                           status === undefined || // Undefined
-                           status === "ABERTO" || // Outro possível status
-                           status === "ABERTA" ||
-                           status === "EM ANDAMENTO" ||
-                           status === "EM ABERTO";
-                });
-
-                // Contar concluídas
-                const todasConcluidas = solicitacoes.filter(s => {
-                    const status = (s.status || '').toUpperCase();
-                    return status === "CONCLUIDA" || 
-                           status === "CONCLUÍDA" || // Com acento
-                           status === "CONCLUIDO" ||
-                           status === "CONCLUÍDO" ||
-                           status === "FINALIZADO" ||
-                           status === "FINALIZADA" ||
-                           status === "RESOLVIDO" ||
-                           status === "RESOLVIDA";
-                });
-
-                // Adicionar manutenções registradas às concluídas
-                const totalConcluidas = todasConcluidas.length + dadosManutencao.length;
-                const totalPendentes = todosPendentes.length;
-
-                console.log('Contagem:', {
-                    pendentesFiltrados: todosPendentes.length,
-                    pendentesRaw: todosPendentes,
-                    concluidasFiltradas: todasConcluidas.length,
-                    manutencoesRegistradas: dadosManutencao.length,
-                    totalPendentes: totalPendentes,
-                    totalConcluidas: totalConcluidas
-                });
+                // Calcular métricas
+                const pendentes = solicitacoes.filter(s => s.status === "PENDENTE").length;
+                const concluidas = solicitacoes.filter(s => s.status === "CONCLUIDA").length;
 
                 // Atualizar métricas na interface
-                document.getElementById("manutencao-concluida").innerHTML = totalConcluidas;
-                document.getElementById("manutencao-pendente").innerHTML = totalPendentes;
+                document.getElementById("manutencao-concluida").innerHTML = concluidas;
+                document.getElementById("manutencao-pendente").innerHTML = pendentes;
+
+                console.log('Dados carregados:', {
+                    manutencoes: dadosManutencao.length,
+                    solicitacoes: solicitacoes.length,
+                    pendentes: pendentes,
+                    concluidas: concluidas
+                });
 
                 return true;
                 
@@ -351,45 +313,17 @@
             tbodyHistorico.innerHTML = '';
             tbodyPendentes.innerHTML = '';
 
-            // Filtrar solicitações (lógica mais flexível para status)
-            const solicitacoesConcluidas = solicitacoes.filter(s => {
-                const status = (s.status || '').toUpperCase();
-                return status === "CONCLUIDA" || 
-                       status === "CONCLUÍDA" ||
-                       status === "CONCLUIDO" ||
-                       status === "CONCLUÍDO" ||
-                       status === "FINALIZADO" ||
-                       status === "FINALIZADA" ||
-                       status === "RESOLVIDO" ||
-                       status === "RESOLVIDA";
-            });
-
-            const solicitacoesPendentes = solicitacoes.filter(s => {
-                const status = (s.status || '').toUpperCase();
-                return status === "PENDENTE" || 
-                       status === "PENDENTE " ||
-                       status === "PENDENTES" ||
-                       status === "PENDÊNTE" ||
-                       !status ||
-                       status === "" ||
-                       status === null ||
-                       status === undefined ||
-                       status === "ABERTO" ||
-                       status === "ABERTA" ||
-                       status === "EM ANDAMENTO" ||
-                       status === "EM ABERTO";
-            });
+            // Filtrar solicitações
+            const solicitacoesConcluidas = solicitacoes.filter(s => s.status === "CONCLUIDA");
+            const solicitacoesPendentes = solicitacoes.filter(s => s.status === "PENDENTE");
 
             console.log('Dados para tabelas:', {
                 concluidas: solicitacoesConcluidas.length,
-                pendentes: solicitacoesPendentes.length,
-                todasSolicitacoes: solicitacoes
+                pendentes: solicitacoesPendentes.length
             });
 
-            // Preencher histórico (CONCLUÍDOS + MANUTENÇÕES REGISTRADAS)
-            const todasConcluidas = [...solicitacoesConcluidas, ...dadosManutencao];
-            
-            if (todasConcluidas.length === 0) {
+            // Preencher histórico (APENAS CONCLUÍDOS)
+            if (solicitacoesConcluidas.length === 0) {
                 tbodyHistorico.innerHTML = `
                     <tr>
                         <td colspan="7" class="text-center text-muted">
@@ -398,22 +332,6 @@
                     </tr>
                 `;
             } else {
-                // Adicionar manutenções registradas primeiro
-                dadosManutencao.forEach(m => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${m.id || 'MAN-' + Date.now().toString().slice(-6)}</td>
-                        <td>${m.item || 'N/A'}</td>
-                        <td>${m.responsavel || 'N/A'}</td>
-                        <td>${formatarData(m.data_manutencao || m.data)}</td>
-                        <td>${m.setor || 'N/A'}</td>
-                        <td>${m.observacao || '-'}</td>
-                        <td><span class="status-badge status-low">Concluída</span></td>
-                    `;
-                    tbodyHistorico.appendChild(row);
-                });
-
-                // Adicionar solicitações concluídas
                 solicitacoesConcluidas.forEach(s => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -429,7 +347,7 @@
                 });
             }
 
-            // Preencher pendentes (PENDENTES)
+            // Preencher pendentes (APENAS PENDENTES)
             if (solicitacoesPendentes.length === 0) {
                 tbodyPendentes.innerHTML = `
                     <tr>
