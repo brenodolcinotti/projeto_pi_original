@@ -663,6 +663,9 @@ async function atualizarTabelas(){
     try{
 
         const response1 = await fetch("http://localhost:1111/nova-solicitacao");
+        if(!response1){
+            alert("erro")
+        }
         const data1 = await response1.json();
 
         solicitacoes = data1
@@ -681,7 +684,7 @@ async function atualizarTabelas(){
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>teste id</td>
-                    <td>${s.item}</td>
+                    <td>teste item</td>
                     <td>${s.resposavel}</td>
                     <td>${s.data_solicitacao}</td>
                     <td>${s.setor}</td>
