@@ -35,10 +35,6 @@
                     <div class="welcome-message">
                         <h2 id="welcome-maintenance">Bem-vindo, Técnico de Manutenção!</h2>
                         <p>Painel de Controle de Manutenção</p>
-                        <div id="server-status" class="server-status checking">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <span>Verificando conexão com o servidor...</span>
-                        </div>
                     </div>
                 </div>
 
@@ -84,9 +80,6 @@
                     <!-- FORMULÁRIO DE REGISTRO -->
                     <div class="card maintenance-card">
                         <h2 class="card-title maintenance-title">Registrar Manutenção Concluída</h2>
-                        <div id="form-alert" class="alert" style="display: none; margin-bottom: 20px;">
-                            <!-- Alerta dinâmico será inserido aqui -->
-                        </div>
                        
                         <form id="maintenance-register-form">
                             <div class="transaction-form">
@@ -156,7 +149,7 @@
                            
                             <button type="submit" class="btn btn-block btn-success" id="submit-btn">
                                 <i class="fas fa-save"></i>
-                                <span id="submit-btn-text">Registrar Manutenção</span>
+                                <span>Registrar Manutenção</span>
                             </button>
                         </form>
                     </div>
@@ -165,10 +158,7 @@
                 <!-- SEÇÃO DE HISTÓRICO -->
                 <div class="maintenance-section" id="maintenance-section-historico">
                     <div class="card maintenance-card">
-                        <h2 class="card-title maintenance-title">Histórico de Manutenções</h2>
-                        <div id="historico-alert" class="alert" style="display: none; margin-bottom: 20px;">
-                            <!-- Alerta dinâmico será inserido aqui -->
-                        </div>
+                        <h2 class="card-title maintenance-title">Histórico de Manutenções Concluídas</h2>
                         
                         <div class="table-responsive">
                             <table class="advanced-table">
@@ -184,7 +174,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="maintenance-history-body">
-                                    <!-- Dados serão preenchidos dinamicamente -->
+                                    <!-- Será preenchido pelo JavaScript -->
                                 </tbody>
                             </table>
                         </div>
@@ -195,9 +185,6 @@
                 <div class="maintenance-section" id="maintenance-section-pendentes">
                     <div class="card maintenance-card">
                         <h2 class="card-title maintenance-title">Manutenções Pendentes</h2>
-                        <div id="pendentes-alert" class="alert" style="display: none; margin-bottom: 20px;">
-                            <!-- Alerta dinâmico será inserido aqui -->
-                        </div>
                     
                         <div class="table-responsive">
                             <table class="advanced-table">
@@ -205,15 +192,15 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Item</th>
-                                        <th>Solicitante</th>
-                                        <th>Data Solicitação</th>
+                                        <th>Responsável</th>
+                                        <th>Data de Solicitação</th>
                                         <th>Setor</th>
-                                        <th>Problema</th>
-                                        <th>Prioridade</th>
+                                        <th>Observação</th>
+                                        <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="maintenance-pending-body">
-                                    <!-- Dados serão preenchidos dinamicamente -->
+                                    <!-- Será preenchido pelo JavaScript -->
                                 </tbody>
                             </table>
                         </div> 
@@ -222,211 +209,20 @@
             </div>
         </div>
     </section>
-    <script src="../../Back-End/back/manutencao.js"></script>
 
-    <style>
-        .server-status {
-            display: inline-flex;
-            align-items: center;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            margin-top: 10px;
-        }
-        
-        .server-status.checking {
-            background-color: #e2e3e5;
-            color: #383d41;
-            border: 1px solid #d6d8db;
-        }
-        
-        .server-status.online {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .server-status.offline {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .server-status i {
-            margin-right: 5px;
-        }
-        
-        .alert {
-            padding: 10px 15px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .alert i {
-            margin-right: 10px;
-        }
-        
-        .alert-warning {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-        
-        .alert-info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-        
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-    </style>
-
+    <!-- CÓDIGO JAVASCRIPT COMPLETO -->
     <script>
-        // Sistema que detecta automaticamente se está online ou offline
-        const STORAGE_KEY = 'sla_manutencao_data';
-        let serverOnline = false;
-        let simulationData = null;
-
-        // Função para testar se o servidor está online
-        async function testarConexaoServidor() {
-            const serverStatus = document.getElementById('server-status');
-            
-            try {
-                // Primeiro tenta uma requisição simples
-                const teste = await fetch('http://localhost:1111/', { 
-                    method: 'GET',
-                    mode: 'no-cors'
-                }).catch(() => null);
-                
-                // Se chegou aqui sem erro, o servidor pode estar online
-                // Vamos tentar uma requisição real para a API de manutenção
-                const response = await fetch('http://localhost:1111/manutencao', {
-                    method: 'GET',
-                    headers: { 'Accept': 'application/json' }
-                }).catch(() => null);
-                
-                if (response && response.ok) {
-                    serverOnline = true;
-                    if (serverStatus) {
-                        serverStatus.className = 'server-status online';
-                        serverStatus.innerHTML = '<i class="fas fa-check-circle"></i><span>Servidor Online</span>';
-                    }
-                    console.log('✅ Servidor está online');
-                    
-                    // Se estava em modo simulação, tentar sincronizar dados
-                    if (simulationData && simulationData.historico.length > 0) {
-                        sincronizarDadosComServidor();
-                    }
-                    
-                } else {
-                    throw new Error('Servidor não respondeu corretamente');
-                }
-                
-            } catch (error) {
-                serverOnline = false;
-                if (serverStatus) {
-                    serverStatus.className = 'server-status offline';
-                    serverStatus.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Servidor Offline - Modo Simulação</span>';
-                }
-                console.log('⚠️ Servidor offline, usando modo simulação');
-            }
-            
-            // Atualizar interface com base no status
-            atualizarInterfaceModoOperacao();
-        }
-
-        // Função para atualizar interface baseada no modo de operação
-        function atualizarInterfaceModoOperacao() {
-            const formAlert = document.getElementById('form-alert');
-            const submitBtn = document.getElementById('submit-btn-text');
-            const historicoAlert = document.getElementById('historico-alert');
-            const pendentesAlert = document.getElementById('pendentes-alert');
-            
-            if (serverOnline) {
-                // Modo online
-                if (formAlert) {
-                    formAlert.style.display = 'none';
-                }
-                if (submitBtn) {
-                    submitBtn.textContent = 'Registrar Manutenção';
-                }
-                if (historicoAlert) {
-                    historicoAlert.style.display = 'none';
-                }
-                if (pendentesAlert) {
-                    pendentesAlert.style.display = 'none';
-                }
-            } else {
-                // Modo offline/simulação
-                if (formAlert) {
-                    formAlert.className = 'alert alert-warning';
-                    formAlert.innerHTML = '<i class="fas fa-exclamation-triangle"></i><strong>Modo Simulação:</strong> Os dados serão salvos localmente. Quando o servidor voltar, eles serão sincronizados.';
-                    formAlert.style.display = 'flex';
-                }
-                if (submitBtn) {
-                    submitBtn.textContent = 'Registrar (Modo Simulação)';
-                }
-                if (historicoAlert) {
-                    historicoAlert.className = 'alert alert-info';
-                    historicoAlert.innerHTML = '<i class="fas fa-info-circle"></i><strong>Modo Simulação:</strong> Exibindo dados armazenados localmente.';
-                    historicoAlert.style.display = 'flex';
-                }
-                if (pendentesAlert) {
-                    pendentesAlert.className = 'alert alert-info';
-                    pendentesAlert.innerHTML = '<i class="fas fa-info-circle"></i><strong>Modo Simulação:</strong> Exibindo dados armazenados localmente.';
-                    pendentesAlert.style.display = 'flex';
-                }
-            }
-        }
-
-        // Carregar dados do localStorage
-        function carregarDadosSimulados() {
-            try {
-                const savedData = localStorage.getItem(STORAGE_KEY);
-                if (savedData) {
-                    simulationData = JSON.parse(savedData);
-                    console.log('Dados simulados carregados:', simulationData);
-                } else {
-                    // Dados iniciais de exemplo
-                    simulationData = {
-                        historico: [],
-                        pendentes: [],
-                        proximoId: 1,
-                        lastUpdate: new Date().toISOString()
-                    };
-                    salvarDadosSimulados();
-                }
-            } catch (error) {
-                console.error('Erro ao carregar dados simulados:', error);
-                simulationData = {
-                    historico: [],
-                    pendentes: [],
-                    proximoId: 1,
-                    lastUpdate: new Date().toISOString()
-                };
-            }
-        }
-
-        // Salvar dados no localStorage
-        function salvarDadosSimulados() {
-            try {
-                if (simulationData) {
-                    simulationData.lastUpdate = new Date().toISOString();
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(simulationData));
-                }
-            } catch (error) {
-                console.error('Erro ao salvar dados simulados:', error);
-            }
-        }
+        // URL do servidor
+        const API_URL = 'http://localhost:1111';
+        
+        // Variáveis para armazenar dados
+        let dadosManutencao = [];
+        let solicitacoes = [];
 
         // Função para alternar entre seções
         function switchMaintenanceSection(sectionId) {
+            console.log('Alternando para seção:', sectionId);
+            
             // Remover classe active de todos os botões
             document.querySelectorAll('.maintenance-control-btn').forEach(btn => {
                 btn.classList.remove('active');
@@ -447,18 +243,11 @@
             
             // Carregar dados da seção
             if (sectionId === 'historico') {
-                if (serverOnline) {
-                    carregarHistoricoServidor();
-                } else {
-                    carregarHistoricoSimulado();
-                }
+                carregarHistorico();
             } else if (sectionId === 'pendentes') {
-                if (serverOnline) {
-                    carregarPendentesServidor();
-                } else {
-                    carregarPendentesSimulados();
-                }
+                carregarPendentes();
             } else if (sectionId === 'registrar') {
+                // Atualizar métricas
                 atualizarMetricas();
                 // Limpar formulário quando abrir
                 const form = document.getElementById('maintenance-register-form');
@@ -470,113 +259,97 @@
             }
         }
 
-        // Atualizar métricas
-        function atualizarMetricas() {
-            if (serverOnline) {
-                // Se o servidor estiver online, tenta buscar dados reais
-                // (você precisará implementar esta função no seu backend)
-                if (typeof buscarDados === 'function') {
-                    buscarDados();
-                }
+        // Função para buscar dados do servidor
+        async function buscarDados() {
+            console.log('Buscando dados do servidor...');
+            
+            try {
+                // Buscar manutenções registradas
+                const response = await fetch(`${API_URL}/manutencao`);
+                const data = await response.json();
+
+                // Buscar solicitações
+                const response1 = await fetch(`${API_URL}/nova-solicitacao`);
+                const data1 = await response1.json();
+
+                // Armazenar dados
+                solicitacoes = data1;
+                dadosManutencao = data;
+
+                // Calcular métricas
+                const pendentes = solicitacoes.filter(s => s.status === "PENDENTE").length;
+                const concluidas = solicitacoes.filter(s => s.status === "CONCLUIDA").length;
+
+                // Atualizar métricas na interface
+                document.getElementById("manutencao-concluida").innerHTML = concluidas;
+                document.getElementById("manutencao-pendente").innerHTML = pendentes;
+
+                console.log('Dados carregados:', {
+                    manutencoes: dadosManutencao.length,
+                    solicitacoes: solicitacoes.length,
+                    pendentes: pendentes,
+                    concluidas: concluidas
+                });
+
+                return true;
+                
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+                alert('Erro ao conectar com o servidor. Verifique se o servidor está rodando.');
+                return false;
+            }
+        }
+
+        // Função para atualizar tabelas
+        function atualizarTabelas() {
+            console.log('Atualizando tabelas...');
+            
+            const tbodyHistorico = document.getElementById("maintenance-history-body");
+            const tbodyPendentes = document.getElementById("maintenance-pending-body");
+            
+            if (!tbodyHistorico || !tbodyPendentes) return;
+
+            // Limpar tabelas
+            tbodyHistorico.innerHTML = '';
+            tbodyPendentes.innerHTML = '';
+
+            // Filtrar solicitações
+            const solicitacoesConcluidas = solicitacoes.filter(s => s.status === "CONCLUIDA");
+            const solicitacoesPendentes = solicitacoes.filter(s => s.status === "PENDENTE");
+
+            console.log('Dados para tabelas:', {
+                concluidas: solicitacoesConcluidas.length,
+                pendentes: solicitacoesPendentes.length
+            });
+
+            // Preencher histórico (APENAS CONCLUÍDOS)
+            if (solicitacoesConcluidas.length === 0) {
+                tbodyHistorico.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            <i class="fas fa-inbox"></i> Nenhuma manutenção concluída
+                        </td>
+                    </tr>
+                `;
             } else {
-                // Modo simulação
-                const pendentesCount = simulationData ? simulationData.pendentes.length : 0;
-                const concluidasCount = simulationData ? simulationData.historico.length : 0;
-                
-                document.getElementById('manutencao-pendente').textContent = pendentesCount;
-                document.getElementById('manutencao-concluida').textContent = concluidasCount;
+                solicitacoesConcluidas.forEach(s => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${s.id || 'N/A'}</td>
+                        <td>${s.item || 'N/A'}</td>
+                        <td>${s.resposavel || s.responsavel || 'N/A'}</td>
+                        <td>${formatarData(s.data_solicitacao)}</td>
+                        <td>${s.setor || 'N/A'}</td>
+                        <td>${s.observacao || '-'}</td>
+                        <td><span class="status-badge status-low">Concluída</span></td>
+                    `;
+                    tbodyHistorico.appendChild(row);
+                });
             }
-        }
 
-        // Carregar histórico do servidor (quando online)
-        async function carregarHistoricoServidor() {
-            const tbody = document.getElementById('maintenance-history-body');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> Carregando do servidor...</td></tr>';
-            
-            try {
-                const response = await fetch('http://localhost:1111/nova-solicitacao?status=CONCLUIDA');
-                if (response.ok) {
-                    const dados = await response.json();
-                    preencherTabelaHistorico(dados);
-                } else {
-                    throw new Error('Erro ao carregar histórico');
-                }
-            } catch (error) {
-                console.error('Erro ao carregar histórico do servidor:', error);
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Erro ao carregar dados do servidor</td></tr>';
-            }
-        }
-
-        // Carregar histórico simulado (quando offline)
-        function carregarHistoricoSimulado() {
-            const tbody = document.getElementById('maintenance-history-body');
-            if (!tbody || !simulationData) return;
-            
-            tbody.innerHTML = '';
-            
-            if (simulationData.historico.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center text-muted">
-                            <i class="fas fa-inbox"></i> Nenhuma manutenção registrada
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            // Ordenar por data (mais recente primeiro)
-            const historicoOrdenado = [...simulationData.historico].sort((a, b) => 
-                new Date(b.data) - new Date(a.data)
-            );
-            
-            historicoOrdenado.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.id}</td>
-                    <td>${item.item}</td>
-                    <td>${item.responsavel}</td>
-                    <td>${formatarData(item.data)}</td>
-                    <td>${item.setor}</td>
-                    <td>${item.observacao || '-'}</td>
-                    <td><span class="status-badge status-low">Concluída</span></td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        // Carregar pendentes do servidor (quando online)
-        async function carregarPendentesServidor() {
-            const tbody = document.getElementById('maintenance-pending-body');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> Carregando do servidor...</td></tr>';
-            
-            try {
-                const response = await fetch('http://localhost:1111/nova-solicitacao?status=PENDENTE');
-                if (response.ok) {
-                    const dados = await response.json();
-                    preencherTabelaPendentes(dados);
-                } else {
-                    throw new Error('Erro ao carregar pendentes');
-                }
-            } catch (error) {
-                console.error('Erro ao carregar pendentes do servidor:', error);
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Erro ao carregar dados do servidor</td></tr>';
-            }
-        }
-
-        // Carregar pendentes simulados (quando offline)
-        function carregarPendentesSimulados() {
-            const tbody = document.getElementById('maintenance-pending-body');
-            if (!tbody || !simulationData) return;
-            
-            tbody.innerHTML = '';
-            
-            if (simulationData.pendentes.length === 0) {
-                tbody.innerHTML = `
+            // Preencher pendentes (APENAS PENDENTES)
+            if (solicitacoesPendentes.length === 0) {
+                tbodyPendentes.innerHTML = `
                     <tr>
                         <td colspan="7" class="text-center text-muted">
                             <i class="fas fa-check-circle" style="color: #28a745;"></i> 
@@ -584,93 +357,61 @@
                         </td>
                     </tr>
                 `;
-                return;
+            } else {
+                solicitacoesPendentes.forEach(s => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${s.id || 'N/A'}</td>
+                        <td>${s.item || 'N/A'}</td>
+                        <td>${s.resposavel || s.responsavel || 'N/A'}</td>
+                        <td>${formatarData(s.data_solicitacao)}</td>
+                        <td>${s.setor || 'N/A'}</td>
+                        <td>${s.observacao || '-'}</td>
+                        <td><span class="status-badge status-high">Pendente</span></td>
+                    `;
+                    tbodyPendentes.appendChild(row);
+                });
             }
-            
-            simulationData.pendentes.forEach(item => {
-                const row = document.createElement('tr');
-                const prioridadeClass = item.prioridade === 'Alta' ? 'status-high' : 
-                                      item.prioridade === 'Média' ? 'status-medium' : 'status-low';
-                
-                row.innerHTML = `
-                    <td>${item.id}</td>
-                    <td>${item.item}</td>
-                    <td>${item.solicitante || 'N/A'}</td>
-                    <td>${formatarData(item.data_solicitacao)}</td>
-                    <td>${item.setor}</td>
-                    <td>${item.problema || '-'}</td>
-                    <td><span class="status-badge ${prioridadeClass}">${item.prioridade || 'Média'}</span></td>
-                `;
-                tbody.appendChild(row);
-            });
         }
 
-        // Funções auxiliares para preencher tabelas
-        function preencherTabelaHistorico(dados) {
-            const tbody = document.getElementById('maintenance-history-body');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            if (!dados || dados.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center text-muted">
-                            <i class="fas fa-inbox"></i> Nenhuma manutenção registrada
-                        </td>
-                    </tr>
-                `;
-                return;
+        // Funções auxiliares para carregar seções específicas
+        function carregarHistorico() {
+            console.log('Carregando histórico...');
+            if (typeof atualizarTabelas === 'function') {
+                atualizarTabelas();
+            } else {
+                // Fallback
+                const tbody = document.getElementById('maintenance-history-body');
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> Carregando...</td></tr>';
+                    setTimeout(() => {
+                        atualizarTabelas();
+                    }, 500);
+                }
             }
-            
-            dados.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.id || 'N/A'}</td>
-                    <td>${item.item || 'N/A'}</td>
-                    <td>${item.resposavel || item.responsavel || 'N/A'}</td>
-                    <td>${formatarData(item.data_solicitacao)}</td>
-                    <td>${item.setor || 'N/A'}</td>
-                    <td>${item.observacao || '-'}</td>
-                    <td><span class="status-badge status-low">${item.status || 'Concluída'}</span></td>
-                `;
-                tbody.appendChild(row);
-            });
         }
 
-        function preencherTabelaPendentes(dados) {
-            const tbody = document.getElementById('maintenance-pending-body');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            if (!dados || dados.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center text-muted">
-                            <i class="fas fa-check-circle" style="color: #28a745;"></i> 
-                            Nenhuma manutenção pendente
-                        </td>
-                    </tr>
-                `;
-                return;
+        function carregarPendentes() {
+            console.log('Carregando pendentes...');
+            if (typeof atualizarTabelas === 'function') {
+                atualizarTabelas();
+            } else {
+                // Fallback
+                const tbody = document.getElementById('maintenance-pending-body');
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> Carregando...</td></tr>';
+                    setTimeout(() => {
+                        atualizarTabelas();
+                    }, 500);
+                }
             }
-            
-            dados.forEach(item => {
-                const row = document.createElement('tr');
-                const prioridadeClass = 'status-high'; // Ou lógica para determinar prioridade
-                
-                row.innerHTML = `
-                    <td>${item.id || 'N/A'}</td>
-                    <td>${item.item || 'N/A'}</td>
-                    <td>${item.resposavel || item.responsavel || 'N/A'}</td>
-                    <td>${formatarData(item.data_solicitacao)}</td>
-                    <td>${item.setor || 'N/A'}</td>
-                    <td>${item.observacao || item.problema || '-'}</td>
-                    <td><span class="status-badge ${prioridadeClass}">Pendente</span></td>
-                `;
-                tbody.appendChild(row);
-            });
+        }
+
+        function atualizarMetricas() {
+            console.log('Atualizando métricas...');
+            if (typeof buscarDados === 'function') {
+                buscarDados();
+            }
         }
 
         // Função para formatar data
@@ -685,153 +426,105 @@
             }
         }
 
-        // Registrar manutenção (tenta servidor primeiro, depois simulação)
-        async function registrarManutencao(dados) {
-            if (serverOnline) {
-                // Tentar enviar para o servidor
-                try {
-                    const response = await fetch("http://localhost:1111/manutencao", {
-                        method: "POST",
-                        headers: { 
-                            "Content-Type": "application/json" 
-                        },
-                        body: JSON.stringify(dados)
-                    });
-                    
-                    if (response.ok) {
-                        const resultado = await response.json();
-                        return { success: true, data: resultado, mode: 'server' };
-                    } else {
-                        throw new Error('Erro ao enviar para servidor');
-                    }
-                } catch (error) {
-                    console.log('Falha ao enviar para servidor, salvando localmente:', error);
-                    // Cai no modo simulação
-                }
-            }
-            
-            // Modo simulação
-            if (!simulationData) carregarDadosSimulados();
-            
-            const id = 'SIM-' + simulationData.proximoId.toString().padStart(3, '0');
-            simulationData.proximoId++;
-            
-            const novaManutencao = {
-                id: id,
-                item: dados.item,
-                responsavel: dados.responsavel,
-                data: dados.data_manutencao,
-                setor: dados.setor,
-                observacao: dados.observacao,
-                tipo: dados.tipo,
-                tempo_manutencao: dados.tempo_manutencao,
-                status: 'CONCLUIDA'
-            };
-            
-            simulationData.historico.unshift(novaManutencao);
-            salvarDadosSimulados();
-            
-            return { success: true, data: novaManutencao, mode: 'simulation' };
-        }
-
-        // Sincronizar dados com servidor quando voltar online
-        async function sincronizarDadosComServidor() {
-            if (!serverOnline || !simulationData) return;
-            
-            console.log('Tentando sincronizar dados com servidor...');
-            
-            // Aqui você pode implementar a lógica para enviar dados do localStorage para o servidor
-            // quando a conexão for restaurada
-        }
-
         // Inicializar a página
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Página de manutenção carregada');
-            
-            // Carregar dados simulados
-            carregarDadosSimulados();
+            console.log('Sistema de Manutenção inicializando...');
             
             // Configurar data atual
             const today = new Date().toISOString().split('T')[0];
             const dateField = document.getElementById('maintenance-date');
             if (dateField) dateField.value = today;
             
-            // Configurar o formulário
+            // Configurar o formulário de registro
             const form = document.getElementById('maintenance-register-form');
             const submitBtn = document.getElementById('submit-btn');
             
             if (form && submitBtn) {
-                form.addEventListener('submit', async function(e) {
+                // Remover event listeners antigos para evitar duplicação
+                const newForm = form.cloneNode(true);
+                form.parentNode.replaceChild(newForm, form);
+                
+                // Configurar novo event listener
+                document.getElementById('maintenance-register-form').addEventListener('submit', async function(e) {
                     e.preventDefault();
-                    
-                    // Desabilitar botão temporariamente
+
+                    // Desabilitar botão
                     const originalText = submitBtn.innerHTML;
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando no banco...';
                     submitBtn.disabled = true;
-                    
+
                     try {
                         // Coletar dados do formulário
-                        const dados = {
-                            item: document.getElementById('maintenance-os-number').value.trim(),
-                            tipo: document.getElementById('maintenance-type').value,
-                            data_manutencao: document.getElementById('maintenance-date').value,
-                            responsavel: document.getElementById('maintenance-technician').value.trim(),
-                            tempo_manutencao: document.getElementById('maintenance-duration').value,
-                            observacao: document.getElementById('maintenance-problem').value.trim(),
-                            setor: document.getElementById('maintenance-status').value
-                        };
-                        
+                        const item = document.getElementById('maintenance-os-number').value;
+                        const tipo = document.getElementById("maintenance-type").value;
+                        const data_manutencao = document.getElementById("maintenance-date").value;
+                        const responsavel = document.getElementById("maintenance-technician").value.trim();
+                        const tempo_manutencao = document.getElementById("maintenance-duration").value;
+                        const observacao = document.getElementById("maintenance-problem").value;
+                        const setor = document.getElementById("maintenance-status").value;
+
                         // Validação
-                        if (!dados.responsavel) {
-                            alert("⚠️ Preencha o campo Técnico Responsável");
+                        if (!responsavel) {
+                            alert("Preencha o campo Técnico Responsável");
                             document.getElementById("maintenance-technician").focus();
                             submitBtn.innerHTML = originalText;
                             submitBtn.disabled = false;
                             return;
                         }
-                        
-                        if (!dados.item || !dados.tempo_manutencao) {
-                            alert("⚠️ Preencha todos os campos obrigatórios!");
-                            submitBtn.innerHTML = originalText;
-                            submitBtn.disabled = false;
-                            return;
-                        }
-                        
-                        // Registrar manutenção
-                        const resultado = await registrarManutencao(dados);
-                        
-                        if (resultado.success) {
-                            let mensagem = `✅ Manutenção registrada com sucesso!\n\nID: ${resultado.data.id}\nItem: ${resultado.data.item}\nTécnico: ${resultado.data.responsavel}`;
+
+                        // Preparar dados para envio
+                        const inserirManutencao = {
+                            item: item,
+                            tipo: tipo,
+                            data_manutencao: data_manutencao,
+                            responsavel: responsavel,
+                            tempo_manutencao: tempo_manutencao,
+                            observacao: observacao,
+                            setor: setor
+                        };
+
+                        console.log('Enviando dados:', inserirManutencao);
+
+                        // Enviar para o servidor
+                        const response = await fetch(`${API_URL}/manutencao`, {
+                            method: "POST",
+                            headers: { 
+                                "Content-Type": "application/json" 
+                            },
+                            body: JSON.stringify(inserirManutencao)
+                        });
+
+                        if (response.ok) {
+                            const resultado = await response.json();
+                            console.log('Resposta do servidor:', resultado);
                             
-                            if (resultado.mode === 'simulation') {
-                                mensagem += '\n\n💾 Os dados foram salvos localmente. Quando o servidor voltar, eles serão sincronizados.';
-                            }
-                            
-                            alert(mensagem);
+                            alert(`✅ Manutenção registrada com sucesso!\n\nItem: ${item}\nTécnico: ${responsavel}\nData: ${formatarData(data_manutencao)}`);
                             
                             // Limpar formulário
-                            form.reset();
+                            document.getElementById('maintenance-register-form').reset();
                             document.getElementById('maintenance-date').value = today;
                             
-                            // Atualizar métricas
-                            atualizarMetricas();
+                            // Atualizar dados
+                            await buscarDados();
                             
-                            // Se estiver na seção de histórico, atualizar
+                            // Se estiver na seção de histórico, atualizar tabela
                             if (document.getElementById('maintenance-section-historico').classList.contains('active')) {
-                                if (serverOnline) {
-                                    carregarHistoricoServidor();
-                                } else {
-                                    carregarHistoricoSimulado();
-                                }
+                                atualizarTabelas();
                             }
                             
                         } else {
-                            throw new Error('Falha ao registrar manutenção');
+                            const errorText = await response.text();
+                            throw new Error(`Erro ${response.status}: ${errorText}`);
                         }
-                        
+
                     } catch (error) {
                         console.error('Erro ao registrar manutenção:', error);
-                        alert('❌ Erro ao registrar manutenção: ' + error.message);
+                        
+                        if (error.message.includes('Failed to fetch')) {
+                            alert('❌ ERRO: Não foi possível conectar ao servidor.\n\nVerifique:\n1. Se o servidor Java está rodando\n2. Se a porta 1111 está correta\n3. Acesse: http://localhost:1111/');
+                        } else {
+                            alert('❌ Erro ao registrar manutenção: ' + error.message);
+                        }
                     } finally {
                         // Reativar botão
                         submitBtn.innerHTML = originalText;
@@ -851,14 +544,10 @@
                 });
             }
             
-            // Testar conexão com servidor
-            testarConexaoServidor();
+            // Carregar dados iniciais
+            buscarDados();
             
-            // Atualizar métricas iniciais
-            atualizarMetricas();
-            
-            // Verificar periodicamente se o servidor voltou
-            setInterval(testarConexaoServidor, 30000); // A cada 30 segundos
+            console.log('Sistema de Manutenção inicializado com sucesso!');
         });
     </script>
 </body>
