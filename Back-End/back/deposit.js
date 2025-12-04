@@ -1,5 +1,42 @@
 var entradaMaterial = false;
 var saidaMaterial = false;
+let solicitacoes = [];
+
+async function buscarDados() {
+
+    try{
+
+        const response1 = await fetch("http://localhost:1111/nova-solicitacao");
+        const data1 = await response1.json();
+
+        solicitacoes = data1
+        
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+function atualizarTabelas(){
+    const tbody1 = document.getElementById("solicatacao-funcionario");
+    if(!tbody1) return;
+
+    tbody1.innerHTML = '';
+    tbody2.innerHTML = '';
+
+    solicitacoes.forEach(s => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${s.id}</td>
+                    <td>${s.item}</td>
+                    <td>${s.resposavel}</td>
+                    <td>${s.data_solicitacao}</td>
+                    <td>${s.setor}</td>
+                    <td>${s.observacao}</td>
+                    <td><span class="status-badge status-low">${s.status}</span></td>
+                `;
+                tbody1.appendChild(row);
+            });
+        }
 
 // VERIFICAR LOGIN E CONFIGURAR INTERFACE
         document.addEventListener('DOMContentLoaded', function() {
