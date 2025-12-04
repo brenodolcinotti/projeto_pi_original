@@ -9,6 +9,13 @@
             "name": "Api",
             "request": "launch",
             "mainClass": "api.Api",
+            "projectName": ""
+        },
+        {
+            "type": "java",
+            "name": "Api",
+            "request": "launch",
+            "mainClass": "api.Api",
             "projectName": "projeto_pi_original_e4ece716"
         },
         {

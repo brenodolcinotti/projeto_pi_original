@@ -6,8 +6,6 @@
     <title>Depósito - Manutenção | SLA Sistema de Logística e Armazenamento</title>
     <link rel="stylesheet" href="../style/deposit.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <header id="main-header" class="maintenance-mode">
@@ -55,7 +53,9 @@
                     </button>
                 </div>
 
+                <!-- SEÇÃO DE REGISTRAR MANUTENÇÃO (COM MÉTRICAS) -->
                 <div class="maintenance-section active" id="maintenance-section-registrar">
+                    <!-- MÉTRICAS -->
                     <div class="maintenance-metrics">
                         <div class="maintenance-metric-card">
                             <div class="maintenance-metric-header">
@@ -63,7 +63,7 @@
                                     <i class="fas fa-tools"></i>
                                 </div>
                             </div>
-                            <div class="maintenance-metric-value" id="manutencao-pendente"></div>
+                            <div class="maintenance-metric-value" id="manutencao-pendente">0</div>
                             <div class="maintenance-metric-label">Manutenções Pendentes</div>
                         </div>
                         <div class="maintenance-metric-card">
@@ -72,14 +72,12 @@
                                     <i class="fas fa-check-circle"></i>
                                 </div>
                             </div>
-                            <div class="maintenance-metric-value" id="manutencao-concluida"></div>
-                            <div class="maintenance-metric-label">Manutenções concluídas</div>
-                        </div>
-                            <!-- <div class="maintenance-metric-value">2</div>
-                            <div class="maintenance-metric-label">Críticas</div> -->
+                            <div class="maintenance-metric-value" id="manutencao-concluida">0</div>
+                            <div class="maintenance-metric-label">Manutenções Concluídas</div>
                         </div>
                     </div>
 
+                    <!-- FORMULÁRIO DE REGISTRO -->
                     <div class="card maintenance-card">
                         <h2 class="card-title maintenance-title">Registrar Manutenção Concluída</h2>
                        
@@ -92,22 +90,6 @@
                                         <input type="text" id="maintenance-os-number" placeholder="Digite o item arrumado" required>
                                     </div>
                                 </div>
-<!--                                
-                                <div class="form-group">
-                                    <label for="maintenance-equipment">Equipamento</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-toolbox"></i>
-                                        <select id="maintenance-equipment" required>
-                                            <option value="">Selecione o equipamento</option>
-                                            <option value="empilhadeira">Empilhadeira Elétrica</option>
-                                            <option value="esteira">Esteira Transportadora</option>
-                                            <option value="refrigeracao">Sistema de Refrigeração</option>
-                                            <option value="computador">Computador</option>
-                                            <option value="veiculo">Veículo</option>
-                                            <option value="outro">Outro</option>
-                                        </select>
-                                    </div>
-                                </div> -->
                                
                                 <div class="form-group">
                                     <label for="maintenance-type">Tipo de Manutenção</label>
@@ -141,7 +123,7 @@
                                     <label for="maintenance-duration">Duração (minutos)</label>
                                     <div class="input-with-icon">
                                         <i class="input-icon fas fa-clock"></i>
-                                        <input type="number" id="maintenance-duration"  placeholder="Ex:65 minutos" required>
+                                        <input type="number" id="maintenance-duration" placeholder="Ex: 65 minutos" required>
                                     </div>
                                 </div>
 
@@ -149,17 +131,9 @@
                                     <label for="maintenance-problem">Observações</label>
                                     <div class="input-with-icon">
                                         <i class="input-icon fas fa-search"></i>
-                                        <textarea id="maintenance-problem" rows="2" placeholder="Descreva o problema encontrado ou a solução aplicada" ></textarea>
+                                        <textarea id="maintenance-problem" rows="2" placeholder="Descreva o problema encontrado ou a solução aplicada"></textarea>
                                     </div>
                                 </div>
-
-                                <!-- <div class="form-group full-width">
-                                    <label for="maintenance-solution">Solução Aplicada</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-check-circle"></i>
-                                        <textarea id="maintenance-solution" rows="3" placeholder="Descreva a solução aplicada" required></textarea>
-                                    </div>
-                                </div> -->
 
                                 <div class="form-group">
                                     <label for="maintenance-status">Setor</label>
@@ -171,17 +145,9 @@
                                         </select>
                                     </div>
                                 </div>
-
-                                <!-- <div class="form-group">
-                                    <label for="maintenance-cost">Custo (R$)</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-dollar-sign"></i>
-                                        <input type="number" id="maintenance-cost" min="0" step="0.01" placeholder="0.00">
-                                    </div>
-                                </div> -->
                             </div>
                            
-                            <button type="submit" class="btn btn-block btn-success">
+                            <button type="submit" class="btn btn-block btn-success" id="submit-btn">
                                 <i class="fas fa-save"></i>
                                 <span>Registrar Manutenção</span>
                             </button>
@@ -189,9 +155,10 @@
                     </div>
                 </div>
 
+                <!-- SEÇÃO DE HISTÓRICO -->
                 <div class="maintenance-section" id="maintenance-section-historico">
                     <div class="card maintenance-card">
-                        <h2 class="card-title maintenance-title">Histórico de Manutenções</h2>
+                        <h2 class="card-title maintenance-title">Histórico de Manutenções Concluídas</h2>
                         
                         <div class="table-responsive">
                             <table class="advanced-table">
@@ -200,20 +167,21 @@
                                         <th>ID</th>
                                         <th>Item</th>
                                         <th>Responsável</th>
-                                        <th>Data de Solicitação</th>
+                                        <th>Data</th>
                                         <th>Setor</th>
                                         <th>Observação</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="maintenance-history-body">
-                                    <!-- Dados serão preenchidos via JavaScript -->
+                                    <!-- Será preenchido pelo JavaScript -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
+                <!-- SEÇÃO DE PENDENTES -->
                 <div class="maintenance-section" id="maintenance-section-pendentes">
                     <div class="card maintenance-card">
                         <h2 class="card-title maintenance-title">Manutenções Pendentes</h2>
@@ -231,7 +199,9 @@
                                         <th>Status</th>
                                     </tr>
                                 </thead>
-                                <tbody id="maintenance-pending-body"></tbody>
+                                <tbody id="maintenance-pending-body">
+                                    <!-- Será preenchido pelo JavaScript -->
+                                </tbody>
                             </table>
                         </div> 
                     </div>
@@ -240,41 +210,19 @@
         </div>
     </section>
 
-    <script src="../../Back-End/back/manutencao.js"></script>
+    <!-- CÓDIGO JAVASCRIPT COMPLETO -->
     <script>
-        // Variáveis globais para armazenar dados
-        let maintenanceHistory = [
-            {
-                os: "OS-2023-015",
-                equipment: "Empilhadeira Elétrica",
-                type: "Corretiva",
-                date: "15/10/2023",
-                technician: "João Silva",
-                status: "Concluído",
-                cost: "R$ 450,00"
-            },
-            {
-                os: "OS-2023-014",
-                equipment: "Esteira Transportadora",
-                type: "Preventiva",
-                date: "12/10/2023",
-                technician: "Maria Santos",
-                status: "Concluído",
-                cost: "R$ 320,00"
-            },
-            {
-                os: "OS-2023-013",
-                equipment: "Sistema de Refrigeração",
-                type: "Preventiva",
-                date: "10/10/2023",
-                technician: "Carlos Oliveira",
-                status: "Concluído",
-                cost: "R$ 580,00"
-            }
-        ];
+        // URL do servidor
+        const API_URL = 'http://localhost:1111';
+        
+        // Variáveis para armazenar dados
+        let dadosManutencao = [];
+        let solicitacoes = [];
 
-        // Função para alternar entre seções de manutenção
+        // Função para alternar entre seções
         function switchMaintenanceSection(sectionId) {
+            console.log('Alternando para seção:', sectionId);
+            
             // Remover classe active de todos os botões
             document.querySelectorAll('.maintenance-control-btn').forEach(btn => {
                 btn.classList.remove('active');
@@ -286,160 +234,321 @@
             });
             
             // Adicionar classe active ao botão clicado
-            document.getElementById(`maintenance-btn-${sectionId}`).classList.add('active');
+            const btn = document.getElementById(`maintenance-btn-${sectionId}`);
+            if (btn) btn.classList.add('active');
             
             // Adicionar classe active à seção correspondente
-            document.getElementById(`maintenance-section-${sectionId}`).classList.add('active');
+            const section = document.getElementById(`maintenance-section-${sectionId}`);
+            if (section) section.classList.add('active');
             
-            // Se for a seção de histórico, carregar os dados
+            // Carregar dados da seção
             if (sectionId === 'historico') {
-                atualizarTabelas();
+                carregarHistorico();
+            } else if (sectionId === 'pendentes') {
+                carregarPendentes();
+            } else if (sectionId === 'registrar') {
+                // Atualizar métricas
+                atualizarMetricas();
+                // Limpar formulário quando abrir
+                const form = document.getElementById('maintenance-register-form');
+                if (form) {
+                    form.reset();
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById('maintenance-date').value = today;
+                }
             }
         }
 
-        // Função para carregar histórico de manutenções
-        // function loadMaintenanceHistory() {
-        //     const tbody = document.getElementById('maintenance-history-body');
-        //     if (!tbody) return;
+        // Função para buscar dados do servidor
+        async function buscarDados() {
+            console.log('Buscando dados do servidor...');
+            
+            try {
+                // Buscar manutenções registradas
+                const response = await fetch(`${API_URL}/manutencao`);
+                const data = await response.json();
 
-        //     tbody.innerHTML = '';
-            
-        //     maintenanceHistory.forEach(item => {
-        //         const row = document.createElement('tr');
-        //         row.innerHTML = `
-        //             <td>${item.os}</td>
-        //             <td>${item.equipment}</td>
-        //             <td>${item.type}</td>
-        //             <td>${item.date}</td>
-        //             <td>${item.technician}</td>
-        //             <td><span class="status-badge status-low">${item.status}</span></td>
-        //             <td>${item.cost}</td>
-        //             <td>
-        //                 <button class="btn btn-secondary btn-sm" onclick="viewMaintenanceDetails('${item.os}')">
-        //                     <i class="fas fa-eye"></i>
-        //                 </button>
-        //             </td>
-        //         `;
-        //         tbody.appendChild(row);
-        //     });
-        // }
+                // Buscar solicitações
+                const response1 = await fetch(`${API_URL}/nova-solicitacao`);
+                const data1 = await response1.json();
 
-        // // Função para adicionar nova manutenção ao histórico
-        // function addMaintenanceToHistory(data) {
-        //     const newMaintenance = {
-        //         os: data.osNumber,
-        //         equipment: data.equipment,
-        //         type: data.type,
-        //         date: data.date,
-        //         technician: data.technician,
-        //         status: data.status === 'concluido' ? 'Concluído' : 
-        //                data.status === 'pendente' ? 'Pendente' : 'Aguardando Peças',
-        //         cost: data.cost ? `R$ ${parseFloat(data.cost).toFixed(2).replace('.', ',')}` : 'R$ 0,00'
-        //     };
-            
-        //     maintenanceHistory.unshift(newMaintenance);
-            
-        //     // Atualizar a tabela se estiver visível
-        //     if (document.getElementById('maintenance-section-historico').classList.contains('active')) {
-        //         loadMaintenanceHistory();
-        //     }
-            
-        //     // Atualizar métricas
-        //     updateMaintenanceMetrics();
-            
-        //     return newMaintenance;
-        // }
+                // Armazenar dados
+                solicitacoes = data1;
+                dadosManutencao = data;
 
-        // // Função para atualizar métricas de manutenção
-        // function updateMaintenanceMetrics() {
-        //     const totalConcluidas = maintenanceHistory.filter(item => item.status === 'Concluído').length;
+                // Calcular métricas
+                const pendentes = solicitacoes.filter(s => s.status === "PENDENTE").length;
+                const concluidas = solicitacoes.filter(s => s.status === "CONCLUIDA").length;
+
+                // Atualizar métricas na interface
+                document.getElementById("manutencao-concluida").innerHTML = concluidas;
+                document.getElementById("manutencao-pendente").innerHTML = pendentes;
+
+                console.log('Dados carregados:', {
+                    manutencoes: dadosManutencao.length,
+                    solicitacoes: solicitacoes.length,
+                    pendentes: pendentes,
+                    concluidas: concluidas
+                });
+
+                return true;
+                
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+                alert('Erro ao conectar com o servidor. Verifique se o servidor está rodando.');
+                return false;
+            }
+        }
+
+        // Função para atualizar tabelas
+        function atualizarTabelas() {
+            console.log('Atualizando tabelas...');
             
-        //     // Atualizar apenas o valor das concluídas (os outros podem ser estáticos para demonstração)
-        //     const concluidasElement = document.querySelector('.maintenance-metric-card:nth-child(2) .maintenance-metric-value');
-        //     if (concluidasElement) concluidasElement.textContent = totalConcluidas;
-        // }
+            const tbodyHistorico = document.getElementById("maintenance-history-body");
+            const tbodyPendentes = document.getElementById("maintenance-pending-body");
+            
+            if (!tbodyHistorico || !tbodyPendentes) return;
 
-        // Função para visualizar detalhes da manutenção
-        // function viewMaintenanceDetails(osNumber) {
-        //     const maintenance = maintenanceHistory.find(item => item.os === osNumber);
-        //     if (maintenance) {
-        //         alert(`Detalhes da Manutenção:\n\nOS: ${maintenance.os}\nEquipamento: ${maintenance.equipment}\nTipo: ${maintenance.type}\nData: ${maintenance.date}\nTécnico: ${maintenance.technician}\nStatus: ${maintenance.status}\nCusto: ${maintenance.cost}`);
-        //     }
-        // }
+            // Limpar tabelas
+            tbodyHistorico.innerHTML = '';
+            tbodyPendentes.innerHTML = '';
 
-        // Função para atender manutenção pendente
-        // function atenderManutencao(osNumber) {
-        //     if (confirm(`Deseja atender a manutenção ${osNumber}?\n\nVocê será redirecionado para a tela de registro.`)) {
-        //         switchMaintenanceSection('registrar');
-        //         // Preencher automaticamente o número da OS
-        //         document.getElementById('maintenance-os-number').value = osNumber;
-        //     }
-        // }
+            // Filtrar solicitações
+            const solicitacoesConcluidas = solicitacoes.filter(s => s.status === "CONCLUIDA");
+            const solicitacoesPendentes = solicitacoes.filter(s => s.status === "PENDENTE");
+
+            console.log('Dados para tabelas:', {
+                concluidas: solicitacoesConcluidas.length,
+                pendentes: solicitacoesPendentes.length
+            });
+
+            // Preencher histórico (APENAS CONCLUÍDOS)
+            if (solicitacoesConcluidas.length === 0) {
+                tbodyHistorico.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            <i class="fas fa-inbox"></i> Nenhuma manutenção concluída
+                        </td>
+                    </tr>
+                `;
+            } else {
+                solicitacoesConcluidas.forEach(s => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${s.id || 'N/A'}</td>
+                        <td>${s.item || 'N/A'}</td>
+                        <td>${s.resposavel || s.responsavel || 'N/A'}</td>
+                        <td>${formatarData(s.data_solicitacao)}</td>
+                        <td>${s.setor || 'N/A'}</td>
+                        <td>${s.observacao || '-'}</td>
+                        <td><span class="status-badge status-low">Concluída</span></td>
+                    `;
+                    tbodyHistorico.appendChild(row);
+                });
+            }
+
+            // Preencher pendentes (APENAS PENDENTES)
+            if (solicitacoesPendentes.length === 0) {
+                tbodyPendentes.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            <i class="fas fa-check-circle" style="color: #28a745;"></i> 
+                            Nenhuma manutenção pendente
+                        </td>
+                    </tr>
+                `;
+            } else {
+                solicitacoesPendentes.forEach(s => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${s.id || 'N/A'}</td>
+                        <td>${s.item || 'N/A'}</td>
+                        <td>${s.resposavel || s.responsavel || 'N/A'}</td>
+                        <td>${formatarData(s.data_solicitacao)}</td>
+                        <td>${s.setor || 'N/A'}</td>
+                        <td>${s.observacao || '-'}</td>
+                        <td><span class="status-badge status-high">Pendente</span></td>
+                    `;
+                    tbodyPendentes.appendChild(row);
+                });
+            }
+        }
+
+        // Funções auxiliares para carregar seções específicas
+        function carregarHistorico() {
+            console.log('Carregando histórico...');
+            if (typeof atualizarTabelas === 'function') {
+                atualizarTabelas();
+            } else {
+                // Fallback
+                const tbody = document.getElementById('maintenance-history-body');
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> Carregando...</td></tr>';
+                    setTimeout(() => {
+                        atualizarTabelas();
+                    }, 500);
+                }
+            }
+        }
+
+        function carregarPendentes() {
+            console.log('Carregando pendentes...');
+            if (typeof atualizarTabelas === 'function') {
+                atualizarTabelas();
+            } else {
+                // Fallback
+                const tbody = document.getElementById('maintenance-pending-body');
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> Carregando...</td></tr>';
+                    setTimeout(() => {
+                        atualizarTabelas();
+                    }, 500);
+                }
+            }
+        }
+
+        function atualizarMetricas() {
+            console.log('Atualizando métricas...');
+            if (typeof buscarDados === 'function') {
+                buscarDados();
+            }
+        }
+
+        // Função para formatar data
+        function formatarData(dataString) {
+            if (!dataString) return '-';
+            try {
+                const data = new Date(dataString);
+                if (isNaN(data.getTime())) return dataString;
+                return data.toLocaleDateString('pt-BR');
+            } catch (e) {
+                return dataString;
+            }
+        }
 
         // Inicializar a página
-       document.addEventListener('DOMContentLoaded', function() {
-    // Configurar data atual no campo de data
-    const today = new Date().toISOString().split('T')[0];
-    const maintenanceDate = document.getElementById('maintenance-date');
-    if (maintenanceDate) maintenanceDate.value = today;
-    
-    // Carregar histórico inicial
-    // loadMaintenanceHistory();
-    
-    // Configurar evento de submit para o formulário de registro de manutenção
-    const maintenanceRegisterForm = document.getElementById('maintenance-register-form');
-    if (maintenanceRegisterForm) {
-        maintenanceRegisterForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Sistema de Manutenção inicializando...');
             
-            const item = document.getElementById('maintenance-os-number').value;
-            const tipo = document.getElementById("maintenance-type").value;
-            const data_manutencao = document.getElementById("maintenance-date").value;
-            const responsavel = document.getElementById("maintenance-technician").value;
-            const tempo_manutencao = document.getElementById("maintenance-duration").value;
-            const observacao = document.getElementById("maintenance-problem").value;
-            const setor = document.getElementById("maintenance-status").value;
+            // Configurar data atual
+            const today = new Date().toISOString().split('T')[0];
+            const dateField = document.getElementById('maintenance-date');
+            if (dateField) dateField.value = today;
+            
+            // Configurar o formulário de registro
+            const form = document.getElementById('maintenance-register-form');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            if (form && submitBtn) {
+                // Remover event listeners antigos para evitar duplicação
+                const newForm = form.cloneNode(true);
+                form.parentNode.replaceChild(newForm, form);
+                
+                // Configurar novo event listener
+                document.getElementById('maintenance-register-form').addEventListener('submit', async function(e) {
+                    e.preventDefault();
 
-            
-            // Formatar data
-            const formattedDate = new Date(data_manutencao).toLocaleDateString('pt-BR');
-        
-            // // Adicionar ao histórico
-            // // const newMaintenance = addMaintenanceToHistory({
-            // //      osNumber,
-            // //      equipment: document.querySelector(`#maintenance-equipment option[value="${equipment}"]`).textContent,
-            // //      type: document.querySelector(`#maintenance-type option[value="${type}"]`).textContent,
-            // //      date: formattedDate,
-            // //      technician,
-            // //      status,
-            // //      cost
-            // // });
-            
-            // // Mostrar mensagem de sucesso
-            // // alert(`Manutenção registrada com sucesso!\n\nOS: ${osNumber}\nEquipamento: ${newMaintenance.equipment}\nTécnico: ${technician}\nDuração: ${duration} horas\nStatus: ${newMaintenance.status}\n\nRegistro adicionado ao histórico.`);
-            
-            // // Limpar formulário
-            maintenanceRegisterForm.reset();
-            
-            // // Atualizar data para hoje
-            document.getElementById('maintenance-date').value = today;
-            
-            // // Alternar para a aba de histórico
-            switchMaintenanceSection('historico');
-        }); // <--- FECHA A FUNÇÃO DO submit (Parêntese já existia)
-    } // <--- FECHA O 'if (maintenanceRegisterForm)'
-    
-    // Configurar botão de logout
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            if (confirm('Deseja realmente sair do sistema?')) {
-                window.location.href = 'login.html';
+                    // Desabilitar botão
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando no banco...';
+                    submitBtn.disabled = true;
+
+                    try {
+                        // Coletar dados do formulário
+                        const item = document.getElementById('maintenance-os-number').value;
+                        const tipo = document.getElementById("maintenance-type").value;
+                        const data_manutencao = document.getElementById("maintenance-date").value;
+                        const responsavel = document.getElementById("maintenance-technician").value.trim();
+                        const tempo_manutencao = document.getElementById("maintenance-duration").value;
+                        const observacao = document.getElementById("maintenance-problem").value;
+                        const setor = document.getElementById("maintenance-status").value;
+
+                        // Validação
+                        if (!responsavel) {
+                            alert("Preencha o campo Técnico Responsável");
+                            document.getElementById("maintenance-technician").focus();
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.disabled = false;
+                            return;
+                        }
+
+                        // Preparar dados para envio
+                        const inserirManutencao = {
+                            item: item,
+                            tipo: tipo,
+                            data_manutencao: data_manutencao,
+                            responsavel: responsavel,
+                            tempo_manutencao: tempo_manutencao,
+                            observacao: observacao,
+                            setor: setor
+                        };
+
+                        console.log('Enviando dados:', inserirManutencao);
+
+                        // Enviar para o servidor
+                        const response = await fetch(`${API_URL}/manutencao`, {
+                            method: "POST",
+                            headers: { 
+                                "Content-Type": "application/json" 
+                            },
+                            body: JSON.stringify(inserirManutencao)
+                        });
+
+                        if (response.ok) {
+                            const resultado = await response.json();
+                            console.log('Resposta do servidor:', resultado);
+                            
+                            alert(`✅ Manutenção registrada com sucesso!\n\nItem: ${item}\nTécnico: ${responsavel}\nData: ${formatarData(data_manutencao)}`);
+                            
+                            // Limpar formulário
+                            document.getElementById('maintenance-register-form').reset();
+                            document.getElementById('maintenance-date').value = today;
+                            
+                            // Atualizar dados
+                            await buscarDados();
+                            
+                            // Se estiver na seção de histórico, atualizar tabela
+                            if (document.getElementById('maintenance-section-historico').classList.contains('active')) {
+                                atualizarTabelas();
+                            }
+                            
+                        } else {
+                            const errorText = await response.text();
+                            throw new Error(`Erro ${response.status}: ${errorText}`);
+                        }
+
+                    } catch (error) {
+                        console.error('Erro ao registrar manutenção:', error);
+                        
+                        if (error.message.includes('Failed to fetch')) {
+                            alert('❌ ERRO: Não foi possível conectar ao servidor.\n\nVerifique:\n1. Se o servidor Java está rodando\n2. Se a porta 1111 está correta\n3. Acesse: http://localhost:1111/');
+                        } else {
+                            alert('❌ Erro ao registrar manutenção: ' + error.message);
+                        }
+                    } finally {
+                        // Reativar botão
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }
+                });
             }
+            
+            // Configurar logout
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('Deseja realmente sair do sistema?')) {
+                        window.location.href = 'login.html';
+                    }
+                });
+            }
+            
+            // Carregar dados iniciais
+            buscarDados();
+            
+            console.log('Sistema de Manutenção inicializado com sucesso!');
         });
-    }
-}); // <--- FECHA A FUNÇÃO DO 'DOMContentLoaded' (Parêntese já existia)
     </script>
 </body>
 </html>

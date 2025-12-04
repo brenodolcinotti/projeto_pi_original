@@ -1,5 +1,6 @@
 var entradaMaterial = false;
 var saidaMaterial = false;
+let solicitacoes = [];
 
 // VERIFICAR LOGIN E CONFIGURAR INTERFACE
         document.addEventListener('DOMContentLoaded', function() {
@@ -628,8 +629,8 @@ carregarDadosEntrada();
                 const response = await fetch("http://localhost:1111/nova-solicitacao");
                 const solicitacoes = await response.json();
 
-                const pendentes = solicitacoes.filter(s => s.status === "PENDENTES").length;
-                const aprovadas = solicitacoes.filter(s => s.status === "CONCLUIDAS").length;
+                const pendentes = solicitacoes.filter(s => s.status === "PENDENTE").length;
+                const aprovadas = solicitacoes.filter(s => s.status === "CONCLUIDA").length;
 
                 console.log(pendentes)
                 console.log(aprovadas)
@@ -642,6 +643,67 @@ carregarDadosEntrada();
             }
 }
 loadEmployeeMetrics();
+// async function buscarDados() {
+
+//     try{
+
+//         const response1 = await fetch("http://localhost:1111/nova-solicitacao");
+//         const data1 = await response1.json();
+
+//         solicitacoes = data1
+//         console.log(solicitacoes)
+        
+//     } catch (error) {
+//         console.log(error)
+//     }
+// }
+
+async function atualizarTabelas() {
+    try {
+        const response1 = await fetch("http://localhost:1111/nova-solicitacao");
+
+        if (!response1.ok) {
+            throw new Error("Erro ao buscar dados da API");
+        }
+
+        const data1 = await response1.json();
+        solicitacoes = data1;
+
+        console.log("Dados recebidos:", solicitacoes);
+
+    } catch (error) {
+        console.log("Erro no fetch:", error);
+        return; // impede o código de continuar quebrado
+    }
+
+    const tbody1 = document.getElementById("solicatacao-funcionario");
+
+    if (!tbody1) {
+        console.log("ERRO: Tbody não encontrado!");
+        return;
+    }
+
+    tbody1.innerHTML = '';
+
+    solicitacoes.forEach(s => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${s.id}</td>
+            <td>${s.item}</td>
+            <td>${s.responsavel}</td>
+            <td>${s.data_solicitacao}</td>
+            <td>${s.setor}</td>
+            <td>${s.observacao}</td>
+            <td><span class="status-badge status-low">${s.status}</span></td>
+        `;
+
+        tbody1.appendChild(row);
+    });
+}
+
+atualizarTabelas();
+// buscarDados();
 
 //dom para mandar Nova Solicitação de Manutenção para o banco 
 document.addEventListener('DOMContentLoaded', function() {
