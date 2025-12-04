@@ -628,8 +628,8 @@ carregarDadosEntrada();
                 const response = await fetch("http://localhost:1111/nova-solicitacao");
                 const solicitacoes = await response.json();
 
-                const pendentes = solicitacoes.filter(s => s.status === "PENDENTES").length;
-                const aprovadas = solicitacoes.filter(s => s.status === "CONCLUIDAS").length;
+                const pendentes = solicitacoes.filter(s => s.status === "PENDENTE").length;
+                const aprovadas = solicitacoes.filter(s => s.status === "CONCLUIDA").length;
 
                 console.log(pendentes)
                 console.log(aprovadas)

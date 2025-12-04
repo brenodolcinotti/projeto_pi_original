@@ -115,6 +115,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     })
 })
-
-
 buscarDados()
