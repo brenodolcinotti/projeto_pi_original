@@ -659,6 +659,7 @@ loadEmployeeMetrics();
 // }
 
 async function atualizarTabelas() {
+    let solicitacoes = []; // Renomeei para 'solicitacoes' para consistência
     try {
         const response1 = await fetch("http://localhost:1111/nova-solicitacao");
 
@@ -673,25 +674,30 @@ async function atualizarTabelas() {
 
     } catch (error) {
         console.log("Erro no fetch:", error);
-        return; // impede o código de continuar quebrado
+        return; 
     }
 
-    const tbody1 = document.getElementById("solicatacao-funcionario");
+    // Corrigido o ID do tbody
+    const tbody1 = document.getElementById("solicitacao-funcionario"); 
 
     if (!tbody1) {
         console.log("ERRO: Tbody não encontrado!");
         return;
     }
 
-    tbody1.innerHTML = '';
+    // 1. LIMPAR A TABELA ANTES DE INSERIR NOVOS DADOS
+    tbody1.innerHTML = ''; 
 
-    solicitacoes.forEach(s => {
+    // 2. Filtro (Opcional, se precisar mostrar APENAS 'CONCLUIDA's)
+    // const solicitacoesConcluidas = solicitacoes.filter(s => s.status === "CONCLUIDA");
+    
+    solicitacoes.forEach(s => { // Usa 'solicitacoes' ou 'solicitacoesConcluidas'
         const row = document.createElement('tr');
 
         row.innerHTML = `
             <td>${s.id}</td>
             <td>${s.item}</td>
-            <td>${s.responsavel}</td>
+            <td>${s.resposavel}</td> 
             <td>${s.data_solicitacao}</td>
             <td>${s.setor}</td>
             <td>${s.observacao}</td>
