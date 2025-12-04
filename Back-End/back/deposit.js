@@ -658,42 +658,49 @@ loadEmployeeMetrics();
 //     }
 // }
 
-async function atualizarTabelas(){
-
-    try{
-
+async function atualizarTabelas() {
+    try {
         const response1 = await fetch("http://localhost:1111/nova-solicitacao");
-        if(!response1){
-            alert("erro")
-        }
-        const data1 = await response1.json();
 
-        solicitacoes = data1
-        console.log(solicitacoes)
-        
+        if (!response1.ok) {
+            throw new Error("Erro ao buscar dados da API");
+        }
+
+        const data1 = await response1.json();
+        solicitacoes = data1;
+
+        console.log("Dados recebidos:", solicitacoes);
+
     } catch (error) {
-        console.log(error)
+        console.log("Erro no fetch:", error);
+        return; // impede o código de continuar quebrado
     }
-    console.log("teste", solicitacoes)
+
     const tbody1 = document.getElementById("solicatacao-funcionario");
-    if(!tbody1) return;
+
+    if (!tbody1) {
+        console.log("ERRO: Tbody não encontrado!");
+        return;
+    }
 
     tbody1.innerHTML = '';
 
     solicitacoes.forEach(s => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>teste id</td>
-                    <td>teste item</td>
-                    <td>${s.resposavel}</td>
-                    <td>${s.data_solicitacao}</td>
-                    <td>${s.setor}</td>
-                    <td>${s.observacao}</td>
-                    <td><span class="status-badge status-low">${s.status}</span></td>
-                `;
-                tbody1.appendChild(row);
-            });
-        }
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${s.id}</td>
+            <td>${s.item}</td>
+            <td>${s.responsavel}</td>
+            <td>${s.data_solicitacao}</td>
+            <td>${s.setor}</td>
+            <td>${s.observacao}</td>
+            <td><span class="status-badge status-low">${s.status}</span></td>
+        `;
+
+        tbody1.appendChild(row);
+    });
+}
 
 atualizarTabelas();
 // buscarDados();
