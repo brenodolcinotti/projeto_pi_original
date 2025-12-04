@@ -571,6 +571,114 @@
 
     <script src="../../Back-End/back/deposit.js"></script>
 
+    <script>
+    // Função para inicializar os botões de entrada/retirada
+    function initializeTransactionButtons() {
+        const depositBtn = document.getElementById('employee-deposit-btn');
+        const withdrawalBtn = document.getElementById('employee-withdrawal-btn');
+        const submitBtn = document.getElementById('employee-transaction-submit-btn');
+        
+        if (!depositBtn || !withdrawalBtn || !submitBtn) {
+            console.error('Botões de transação não encontrados');
+            return;
+        }
+        
+        // Configurar botão de retirada
+        withdrawalBtn.addEventListener('click', function() {
+            // Alternar classes ativas
+            depositBtn.classList.remove('active');
+            withdrawalBtn.classList.remove('btn-secondary');
+            withdrawalBtn.classList.add('active');
+            depositBtn.classList.add('btn-secondary');
+            
+            // Mudar texto do botão de envio
+            const submitBtnText = submitBtn.querySelector('span');
+            if (submitBtnText) {
+                submitBtnText.textContent = 'Registrar Retirada';
+            }
+            
+            // Mudar ícone
+            const submitBtnIcon = submitBtn.querySelector('i');
+            if (submitBtnIcon) {
+                submitBtnIcon.className = 'fas fa-minus-circle';
+            }
+            
+            // Mudar cor do botão
+            submitBtn.classList.remove('btn-success');
+            submitBtn.classList.add('btn-warning');
+        });
+        
+        // Configurar botão de entrada
+        depositBtn.addEventListener('click', function() {
+            // Alternar classes ativas
+            withdrawalBtn.classList.remove('active');
+            depositBtn.classList.remove('btn-secondary');
+            depositBtn.classList.add('active');
+            withdrawalBtn.classList.add('btn-secondary');
+            
+            // Mudar texto do botão de envio
+            const submitBtnText = submitBtn.querySelector('span');
+            if (submitBtnText) {
+                submitBtnText.textContent = 'Registrar Entrada';
+            }
+            
+            // Mudar ícone
+            const submitBtnIcon = submitBtn.querySelector('i');
+            if (submitBtnIcon) {
+                submitBtnIcon.className = 'fas fa-plus-circle';
+            }
+            
+            // Mudar cor do botão
+            submitBtn.classList.remove('btn-warning');
+            submitBtn.classList.add('btn-success');
+        });
+        
+        console.log('Botões de transação inicializados');
+    }
+    
+    // Sobrescrever a função switchEmployeeSection para inicializar os botões quando entrar na seção de movimentação
+    const originalSwitchEmployeeSection = window.switchEmployeeSection;
+    
+    window.switchEmployeeSection = function(sectionId) {
+        // Chamar a função original se existir
+        if (typeof originalSwitchEmployeeSection === 'function') {
+            originalSwitchEmployeeSection(sectionId);
+        } else {
+            // Remover classe active de todos os botões
+            document.querySelectorAll('.employee-control-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Remover classe active de todas as seções
+            document.querySelectorAll('.employee-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Adicionar classe active ao botão clicado
+            const btn = document.getElementById(`employee-btn-${sectionId}`);
+            if (btn) btn.classList.add('active');
+            
+            // Adicionar classe active à seção correspondente
+            const section = document.getElementById(`employee-section-${sectionId}`);
+            if (section) section.classList.add('active');
+        }
+        
+        // Se for a seção de movimentação, inicializar os botões
+        if (sectionId === 'movimentacao') {
+            setTimeout(initializeTransactionButtons, 100);
+        }
+    }
+    
+    // Inicializar quando a página carregar
+    document.addEventListener('DOMContentLoaded', function() {
+        // Verificar se já estamos na seção de movimentação
+        const movimentacaoSection = document.getElementById('employee-section-movimentacao');
+        if (movimentacaoSection && movimentacaoSection.classList.contains('active')) {
+            initializeTransactionButtons();
+        }
+    });
+</script>
+
 </body>
 
 </html>
