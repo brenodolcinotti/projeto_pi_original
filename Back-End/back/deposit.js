@@ -392,7 +392,7 @@ let solicitacoes = [];
             document.getElementById(`btn-${sectionName}`).classList.add('active');
         }
 
-
+        //FUNÇÃO QUE DEIXA INVISIVEL O CARD DE NOVA SOLICITAÇÃO DE MANUTENÇÃO NÁ SEÇÃO DE MONITORAR 
         function switchEmployeeSection(sectionName) {
             // Desativar todas as seções
             document.querySelectorAll('.employee-section').forEach(section => {
@@ -407,24 +407,30 @@ let solicitacoes = [];
             // Ativar seção e botão correspondentes
             document.getElementById(`employee-section-${sectionName}`).classList.add('active');
             document.getElementById(`employee-btn-${sectionName}`).classList.add('active');
-        
+
             // ✅ CONTROLE DOS DOIS CARDS
             const cardNova = document.getElementById("card-nova-solicitacao");
             const cardMinhas = document.getElementById("card-minhas-solicitacoes");
-        
+
+            // ✅ CONTROLE DO BOTÃO "Solicitar Manutenção"
+            const btnManutencao = document.getElementById("btn-solicitar-manutencao");
+
             if (sectionName === "movimentacao") {
                 cardNova.style.display = "none";     // esconde Nova Solicitação
-                cardMinhas.style.display = "none";   // esconde Minhas Solicitações ✅
+                cardMinhas.style.display = "none";  // esconde Minhas Solicitações
+                btnManutencao.style.display = "none"; // ✅ ESCONDE O BOTÃO
             } else {
-                cardNova.style.display = "block";    // mostra Nova Solicitação
-                cardMinhas.style.display = "block";  // mostra Minhas Solicitações ✅
+                cardNova.style.display = "block";    
+                cardMinhas.style.display = "block"; 
+                btnManutencao.style.display = "block"; // ✅ MOSTRA O BOTÃO
             }
-        
-            // sua regra original continua intacta ✅
+
+            // ✅ sua regra original continua intacta
             if (sectionName === "solicitacoes") {
                 loadEmployeeMetrics();
             }
         }
+
 
 
 

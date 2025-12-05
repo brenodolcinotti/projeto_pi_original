@@ -138,5 +138,35 @@ public class dao {
         return manutencao;
     }
 
+    //read nova-solicitacao pendente
+ public List<NovaSolicitacao> listarSolicitacaoPendente(){
+
+        List<NovaSolicitacao> pendente = new ArrayList<>();
+
+        String sql = "SELECT * FROM nova_solicitacao WHERE status = \"PENDENTE\"";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery()
+        ) {
+            while(rs.next()){
+               NovaSolicitacao novaSolicitacao = new NovaSolicitacao(
+                    rs.getLong("id"), 
+                    rs.getString("item"), 
+                    rs.getString("data_solicitacao"), 
+                    rs.getString("setor"), 
+                    rs.getString("observacao"), 
+                    rs.getString("responsavel"),
+                    rs.getString("status")
+                    );
+                    pendente.add(novaSolicitacao);
+            }
+            
+        } catch (SQLException e) {
+            System.err.println("Erro ao buscar dados de solitações pendentes: " + e.getMessage());
+            e.printStackTrace();        
+        }
+        return pendente;
+    }
     
 }

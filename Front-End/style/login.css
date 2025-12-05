@@ -347,3 +347,11 @@
                 padding: 1.5rem;
             }
         }
+        
+            .debug-info {
+                display: none !important;
+        }
+
+            .demo-accounts {
+                display: none !important;
+        }

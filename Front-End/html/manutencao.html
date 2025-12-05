@@ -83,6 +83,18 @@
                        
                         <form id="maintenance-register-form">
                             <div class="transaction-form">
+
+                                <div class="form-group">
+                                    <label for="pendente-manutencao">ID da Solicitação</label>
+                                    <div class="input-with-icon">
+                                        <i class="input-icon fas fa-wrench"></i>
+                                        <select id="pendente-manutencao" required>
+                                            <option value="" disabled selected>Selecione o ID da manutenção pendente</option>
+                                        </select>
+                                    </div>
+                                </div>
+                               
+
                                 <div class="form-group">
                                     <label for="maintenance-os-number">Item</label>
                                     <div class="input-with-icon">
@@ -139,10 +151,7 @@
                                     <label for="maintenance-status">Setor</label>
                                     <div class="input-with-icon">
                                         <i class="input-icon fas fa-flag"></i>
-                                        <select id="maintenance-status" required>
-                                            <option value="RH">RH</option>
-                                            <option value="Almoxarifado">Almoxarifado</option>
-                                        </select>
+                                        <input type="text" id="manutencao-setor" placeholder="Digite o setor da manutenção">
                                     </div>
                                 </div>
                             </div>
@@ -218,6 +227,43 @@
         // Variáveis para armazenar dados
         let dadosManutencao = [];
         let solicitacoes = [];
+
+  window.onload = function(){
+        listarPendentes();
+}
+
+        async function listarPendentes() {
+            let pendentes;
+            const select = document.getElementById("pendente-manutencao");
+            
+            if (!select) {
+                console.error("Elemento 'pendente-manutencao' não encontrado.");
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:1111/pendente")
+                const data = await response.json()
+
+                pendentes = data;
+                console.log("Todas as Solicitações pendentes:", pendentes);
+                select.innerHTML = ''; 
+
+                pendentes.forEach(p => {
+                    const option = document.createElement("option");
+                    option.value = p.id;
+                    option.textContent = `ID ${p.id} - ${p.item} (${p.setor})`;
+                    select.appendChild(option);
+                });
+
+
+
+            } catch (error) {
+                console.error("Erro ao listar solicitações pendentes:", error);
+                select.innerHTML = '<option value="">Erro ao carregar dados</option>';
+            }
+}
+
 
         // Função para alternar entre seções
         function switchMaintenanceSection(sectionId) {

@@ -46,6 +46,10 @@ public class Api {
          get("/nova-solicitacao", (request, response) -> {
             return gson.toJson(dao.listarNovaSolicitacao());
         });
+
+        get("/pendente", (request, response) -> {
+            return gson.toJson(dao.listarSolicitacaoPendente());
+        });
         
         get("/manutencao", (request, response) -> {
             return gson.toJson(dao.listarManutencao());
