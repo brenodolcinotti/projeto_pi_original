@@ -177,9 +177,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Mostra debug info
     updateDebugInfo();
     
-    // Preenche com manutencao automaticamente
-    fillDemoAccount('manutencao', '123456');
-    
     // Configura formulário
     document.getElementById('login-form').addEventListener('submit', function(e) {
         e.preventDefault();

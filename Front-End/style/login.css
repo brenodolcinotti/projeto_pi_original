@@ -347,13 +347,11 @@
                 padding: 1.5rem;
             }
         }
+        
+            .debug-info {
+                display: none !important;
+        }
 
-        /* Área de Debug - invisível */
-.debug-info {
-    display: none !important;
-}
-
-/* Contas de Demonstração - invisível */
-.demo-accounts {
-    display: none !important;
-}
+            .demo-accounts {
+                display: none !important;
+        }
