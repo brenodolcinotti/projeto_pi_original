@@ -54,11 +54,13 @@ DROP TABLE IF EXISTS `login`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `login` (
   `usuario` varchar(50) NOT NULL,
-  `senha` varchar(50) NOT NULL,
+  `senha` varchar(255) NOT NULL,
   `id` int NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+ALTER TABLE login ADD UNIQUE (usuario);
 
 --
 -- Dumping data for table `login`
@@ -68,6 +70,23 @@ LOCK TABLES `login` WRITE;
 /*!40000 ALTER TABLE `login` DISABLE KEYS */;
 INSERT INTO `login` VALUES ('almoxarifado','almoxarifado123',1),('manutencao','manutencao123',2),('rh','rh123',3),('gerente','gerente123',4);
 /*!40000 ALTER TABLE `login` ENABLE KEYS */;
+
+UPDATE login 
+SET senha = '$2b$12$dMmsKmoZJPRpopzJKOj2Ru8XeDDce/v89VIyChfT3cOq78CxuXcbq'
+WHERE usuario = 'almoxarifado';
+
+UPDATE login 
+SET senha = '$2b$12$Y8AN3W4zoozzN2xe8tRuwODnzkWOzmrgn/r7IlMA2bPiT0hsGczrS'
+WHERE usuario = 'manutencao';
+
+UPDATE login 
+SET senha = '$2b$12$Xd33r4LgvPQLCjH/evugaO38jmvhsHWiEr000G.4HwtbP3YG0.mwS'
+WHERE usuario = 'rh';
+
+UPDATE login 
+SET senha = '$2b$12$EeQSKb64uM8ivurb6/UP6eXJRgN6AlqzvekS.C.jAkQnmKXJurXLy'
+WHERE usuario = 'gerente';
+
 UNLOCK TABLES;
 
 --
