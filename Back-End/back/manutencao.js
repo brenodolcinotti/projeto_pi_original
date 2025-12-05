@@ -1,5 +1,6 @@
 let dadosManutencao = [];
 let solicitacoes = [];
+let pendentes = [];
 
 async function buscarDados() {
 
@@ -10,14 +11,32 @@ async function buscarDados() {
         const response1 = await fetch("http://localhost:1111/nova-solicitacao");
         const data1 = await response1.json();
 
+
         solicitacoes = data1
         dadosManutencao = data
 
-        const pendentes = solicitacoes.filter(s => s.status === "PENDENTE").length;
+        pendentes = solicitacoes.filter(s => s.status === "PENDENTE").length;
         const concluidas = solicitacoes.filter(s => s.status === "CONCLUIDA").length;
 
         document.getElementById("manutencao-concluida").innerHTML = concluidas
         document.getElementById("manutencao-pendente").innerHTML = pendentes
+
+        // options
+        const select = document.getElementById("pendente-manutencao");
+        
+        if (!select) {
+            console.error("Elemento 'pendente-manutencao' não encontrado.");
+            return;
+        }
+        console.log("Todas as Solicitações pendentes:", pendentes);
+        select.innerHTML = ''; 
+
+        pendentes.forEach(p => {
+            const option = document.createElement("option");
+            option.value = p.id;
+            option.textContent = `ID ${p.id} - ${p.item} (${p.setor})`;
+            select.appendChild(option);
+        });
 
         console.log(dadosManutencao)
     } catch (error) {
@@ -70,6 +89,9 @@ function atualizarTabelas(){
 
 document.addEventListener('DOMContentLoaded', function() {
 
+    buscarDados();
+    // listarPendentes();
+
     document.getElementById("maintenance-register-form").addEventListener("submit", function(e) {
         e.preventDefault();
 
@@ -114,5 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
     cadastrarDados();
 
     })
+   
 })
-buscarDados()
+
+
