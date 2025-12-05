@@ -724,23 +724,47 @@ input:focus, select:focus, textarea:focus {
     }
 }
 
-/* SCROLLBAR */
-::-webkit-scrollbar {
+/* layout base da tabela */
+.advanced-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* melhora o comportamento quando tiver colunas longas */
+}
+
+/* contêiner rolável */
+.tabela-scroll-limitada {
+    max-height: 320px;    /* altura máxima antes de aparecer scroll — ajuste conforme necessidade */
+    overflow: auto;       /* habilita scroll vertical/horizontal quando necessário */
+    -webkit-overflow-scrolling: touch; /* rolagem suave em iOS */
+    border-radius: 6px;
+    /* opcional: adicionar um pequeno padding para não colar na borda do card */
+    padding-right: 4px;
+}
+
+/* suas regras de scrollbar (WebKit) — já ok */
+.tabela-scroll-limitada::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
-
-::-webkit-scrollbar-track {
+.tabela-scroll-limitada::-webkit-scrollbar-track {
     background: rgba(15, 23, 42, 0.5);
     border-radius: 4px;
 }
-
-::-webkit-scrollbar-thumb {
+.tabela-scroll-limitada::-webkit-scrollbar-thumb {
     background: var(--accent);
     border-radius: 4px;
 }
-
-::-webkit-scrollbar-thumb:hover {
+.tabela-scroll-limitada::-webkit-scrollbar-thumb:hover {
     background: var(--accent-dark);
 }
+
+/* pequenas melhorias visuais nas células */
+.advanced-table th, .advanced-table td {
+    padding: 8px 10px;
+    text-align: left;
+    white-space: nowrap; /* evita quebra em colunas que você prefere manter em uma linha */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 
