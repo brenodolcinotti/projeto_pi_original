@@ -1,600 +1,140 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Depósito - Manutenção | SLA Sistema de Logística e Armazenamento</title>
-    <link rel="stylesheet" href="../style/deposit.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <header id="main-header" class="maintenance-mode">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <div class="logo-icon maintenance" id="logo-icon">SLA</div>
-                    <h1>Sistema de <span>Logística e Armazenamento</span></h1>
-                </div>
-                <div class="user-info maintenance" id="user-info">
-                    <span id="user-name">Técnico</span>
-                    <span class="user-type maintenance" id="user-type-display">Manutenção</span>
-                    <a href="login.html" class="btn btn-danger" id="logout-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Sair
-                    </a>
-                </div>
-            </div>
-        </div>
-    </header>
+let dadosManutencao = [];
+let solicitacoes = [];
+let pendentes = [];
 
-    <section class="page">
-        <div class="container">
-            <!-- Dashboard do Técnico de Manutenção -->
-            <div class="maintenance-dashboard" id="maintenance-dashboard">
-                <div class="dashboard-header">
-                    <div class="welcome-message">
-                        <h2 id="welcome-maintenance">Bem-vindo, Técnico de Manutenção!</h2>
-                        <p>Painel de Controle de Manutenção</p>
-                    </div>
-                </div>
+async function buscarDados() {
 
-                <div class="maintenance-controls">
-                    <button class="maintenance-control-btn active" id="maintenance-btn-registrar" onclick="switchMaintenanceSection('registrar')">
-                        <i class="fas fa-clipboard-check"></i>
-                        Registrar Manutenção
-                    </button>
-                    <button class="maintenance-control-btn" id="maintenance-btn-historico" onclick="switchMaintenanceSection('historico')">
-                        <i class="fas fa-history"></i>
-                        Histórico
-                    </button>
-                    <button class="maintenance-control-btn" id="maintenance-btn-pendentes" onclick="switchMaintenanceSection('pendentes')">
-                        <i class="fas fa-clock"></i>
-                        Pendentes
-                    </button>
-                </div>
+    try{
+        const response = await fetch("http://localhost:1111/manutencao");
+        const data = await response.json();
 
-                <!-- SEÇÃO DE REGISTRAR MANUTENÇÃO (COM MÉTRICAS) -->
-                <div class="maintenance-section active" id="maintenance-section-registrar">
-                    <!-- MÉTRICAS -->
-                    <div class="maintenance-metrics">
-                        <div class="maintenance-metric-card">
-                            <div class="maintenance-metric-header">
-                                <div class="maintenance-metric-icon">
-                                    <i class="fas fa-tools"></i>
-                                </div>
-                            </div>
-                            <div class="maintenance-metric-value" id="manutencao-pendente">0</div>
-                            <div class="maintenance-metric-label">Manutenções Pendentes</div>
-                        </div>
-                        <div class="maintenance-metric-card">
-                            <div class="maintenance-metric-header">
-                                <div class="maintenance-metric-icon">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
-                            </div>
-                            <div class="maintenance-metric-value" id="manutencao-concluida">0</div>
-                            <div class="maintenance-metric-label">Manutenções Concluídas</div>
-                        </div>
-                    </div>
+        const response1 = await fetch("http://localhost:1111/nova-solicitacao");
+        const data1 = await response1.json();
 
-                    <!-- FORMULÁRIO DE REGISTRO -->
-                    <div class="card maintenance-card">
-                        <h2 class="card-title maintenance-title">Registrar Manutenção Concluída</h2>
-                       
-                        <form id="maintenance-register-form">
-                            <div class="transaction-form">
 
-                                <div class="form-group">
-                                    <label for="pendente-manutencao">ID da Solicitação</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-wrench"></i>
-                                        <select id="pendente-manutencao" required>
-                                            <option value="" disabled selected>Selecione o ID da manutenção pendente</option>
-                                        </select>
-                                    </div>
-                                </div>
-                               
+        solicitacoes = data1
+        dadosManutencao = data
 
-                                <div class="form-group">
-                                    <label for="maintenance-os-number">Item</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-hashtag"></i>
-                                        <input type="text" id="maintenance-os-number" placeholder="Digite o item arrumado" required>
-                                    </div>
-                                </div>
-                               
-                                <div class="form-group">
-                                    <label for="maintenance-type">Tipo de Manutenção</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-wrench"></i>
-                                        <select id="maintenance-type" required>
-                                            <option value="Preventiva">Preventiva</option>
-                                            <option value="Corretiva">Corretiva</option>
-                                            <option value="Preditiva">Preditiva</option>
-                                        </select>
-                                    </div>
-                                </div>
-                               
-                                <div class="form-group">
-                                    <label for="maintenance-date">Data da Manutenção</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-calendar-alt"></i>
-                                        <input type="date" id="maintenance-date" required>
-                                    </div>
-                                </div>
+        pendentes = solicitacoes.filter(s => s.status === "PENDENTE").length;
+        const concluidas = solicitacoes.filter(s => s.status === "CONCLUIDA").length;
 
-                                <div class="form-group">
-                                    <label for="maintenance-technician">Técnico Responsável</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-user"></i>
-                                        <input type="text" id="maintenance-technician" placeholder="Nome do técnico" required>
-                                    </div>
-                                </div>
+        document.getElementById("manutencao-concluida").innerHTML = concluidas
+        document.getElementById("manutencao-pendente").innerHTML = pendentes
 
-                                <div class="form-group">
-                                    <label for="maintenance-duration">Duração (minutos)</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-clock"></i>
-                                        <input type="number" id="maintenance-duration" placeholder="Ex: 65 minutos" required>
-                                    </div>
-                                </div>
-
-                                <div class="form-group full-width">
-                                    <label for="maintenance-problem">Observações</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-search"></i>
-                                        <textarea id="maintenance-problem" rows="2" placeholder="Descreva o problema encontrado ou a solução aplicada"></textarea>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="maintenance-status">Setor</label>
-                                    <div class="input-with-icon">
-                                        <i class="input-icon fas fa-flag"></i>
-                                        <input type="text" id="manutencao-setor" placeholder="Digite o setor da manutenção">
-                                    </div>
-                                </div>
-                            </div>
-                           
-                            <button type="submit" class="btn btn-block btn-success" id="submit-btn">
-                                <i class="fas fa-save"></i>
-                                <span>Registrar Manutenção</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- SEÇÃO DE HISTÓRICO -->
-                <div class="maintenance-section" id="maintenance-section-historico">
-                    <div class="card maintenance-card">
-                        <h2 class="card-title maintenance-title">Histórico de Manutenções Concluídas</h2>
-                        
-                        <div class="table-responsive">
-                            <table class="advanced-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Item</th>
-                                        <th>Responsável</th>
-                                        <th>Data</th>
-                                        <th>Setor</th>
-                                        <th>Observação</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="maintenance-history-body">
-                                    <!-- Será preenchido pelo JavaScript -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SEÇÃO DE PENDENTES -->
-                <div class="maintenance-section" id="maintenance-section-pendentes">
-                    <div class="card maintenance-card">
-                        <h2 class="card-title maintenance-title">Manutenções Pendentes</h2>
-                    
-                        <div class="table-responsive">
-                            <table class="advanced-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Item</th>
-                                        <th>Responsável</th>
-                                        <th>Data de Solicitação</th>
-                                        <th>Setor</th>
-                                        <th>Observação</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="maintenance-pending-body">
-                                    <!-- Será preenchido pelo JavaScript -->
-                                </tbody>
-                            </table>
-                        </div> 
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CÓDIGO JAVASCRIPT COMPLETO -->
-    <script>
-        // URL do servidor
-        const API_URL = 'http://localhost:1111';
+        // options
+        const select = document.getElementById("pendente-manutencao");
         
-        // Variáveis para armazenar dados
-        let dadosManutencao = [];
-        let solicitacoes = [];
-
-  window.onload = function(){
-        listarPendentes();
-}
-
-        async function listarPendentes() {
-            let pendentes;
-            const select = document.getElementById("pendente-manutencao");
-            
-            if (!select) {
-                console.error("Elemento 'pendente-manutencao' não encontrado.");
-                return;
-            }
-
-            try {
-                const response = await fetch("http://localhost:1111/pendente")
-                const data = await response.json()
-
-                pendentes = data;
-                console.log("Todas as Solicitações pendentes:", pendentes);
-                select.innerHTML = ''; 
-
-                pendentes.forEach(p => {
-                    const option = document.createElement("option");
-                    option.value = p.id;
-                    option.textContent = `ID ${p.id} - ${p.item} (${p.setor})`;
-                    select.appendChild(option);
-                });
-
-
-
-            } catch (error) {
-                console.error("Erro ao listar solicitações pendentes:", error);
-                select.innerHTML = '<option value="">Erro ao carregar dados</option>';
-            }
-}
-
-
-        // Função para alternar entre seções
-        function switchMaintenanceSection(sectionId) {
-            console.log('Alternando para seção:', sectionId);
-            
-            // Remover classe active de todos os botões
-            document.querySelectorAll('.maintenance-control-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Remover classe active de todas as seções
-            document.querySelectorAll('.maintenance-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Adicionar classe active ao botão clicado
-            const btn = document.getElementById(`maintenance-btn-${sectionId}`);
-            if (btn) btn.classList.add('active');
-            
-            // Adicionar classe active à seção correspondente
-            const section = document.getElementById(`maintenance-section-${sectionId}`);
-            if (section) section.classList.add('active');
-            
-            // Carregar dados da seção
-            if (sectionId === 'historico') {
-                carregarHistorico();
-            } else if (sectionId === 'pendentes') {
-                carregarPendentes();
-            } else if (sectionId === 'registrar') {
-                // Atualizar métricas
-                atualizarMetricas();
-                // Limpar formulário quando abrir
-                const form = document.getElementById('maintenance-register-form');
-                if (form) {
-                    form.reset();
-                    const today = new Date().toISOString().split('T')[0];
-                    document.getElementById('maintenance-date').value = today;
-                }
-            }
+        if (!select) {
+            console.error("Elemento 'pendente-manutencao' não encontrado.");
+            return;
         }
+        console.log("Todas as Solicitações pendentes:", pendentes);
+        select.innerHTML = ''; 
 
-        // Função para buscar dados do servidor
-        async function buscarDados() {
-            console.log('Buscando dados do servidor...');
-            
-            try {
-                // Buscar manutenções registradas
-                const response = await fetch(`${API_URL}/manutencao`);
-                const data = await response.json();
-
-                // Buscar solicitações
-                const response1 = await fetch(`${API_URL}/nova-solicitacao`);
-                const data1 = await response1.json();
-
-                // Armazenar dados
-                solicitacoes = data1;
-                dadosManutencao = data;
-
-                // Calcular métricas
-                const pendentes = solicitacoes.filter(s => s.status === "PENDENTE").length;
-                const concluidas = solicitacoes.filter(s => s.status === "CONCLUIDA").length;
-
-                // Atualizar métricas na interface
-                document.getElementById("manutencao-concluida").innerHTML = concluidas;
-                document.getElementById("manutencao-pendente").innerHTML = pendentes;
-
-                console.log('Dados carregados:', {
-                    manutencoes: dadosManutencao.length,
-                    solicitacoes: solicitacoes.length,
-                    pendentes: pendentes,
-                    concluidas: concluidas
-                });
-
-                return true;
-                
-            } catch (error) {
-                console.error('Erro ao buscar dados:', error);
-                alert('Erro ao conectar com o servidor. Verifique se o servidor está rodando.');
-                return false;
-            }
-        }
-
-        // Função para atualizar tabelas
-        function atualizarTabelas() {
-            console.log('Atualizando tabelas...');
-            
-            const tbodyHistorico = document.getElementById("maintenance-history-body");
-            const tbodyPendentes = document.getElementById("maintenance-pending-body");
-            
-            if (!tbodyHistorico || !tbodyPendentes) return;
-
-            // Limpar tabelas
-            tbodyHistorico.innerHTML = '';
-            tbodyPendentes.innerHTML = '';
-
-            // Filtrar solicitações
-            const solicitacoesConcluidas = solicitacoes.filter(s => s.status === "CONCLUIDA");
-            const solicitacoesPendentes = solicitacoes.filter(s => s.status === "PENDENTE");
-
-            console.log('Dados para tabelas:', {
-                concluidas: solicitacoesConcluidas.length,
-                pendentes: solicitacoesPendentes.length
-            });
-
-            // Preencher histórico (APENAS CONCLUÍDOS)
-            if (solicitacoesConcluidas.length === 0) {
-                tbodyHistorico.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center text-muted">
-                            <i class="fas fa-inbox"></i> Nenhuma manutenção concluída
-                        </td>
-                    </tr>
-                `;
-            } else {
-                solicitacoesConcluidas.forEach(s => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${s.id || 'N/A'}</td>
-                        <td>${s.item || 'N/A'}</td>
-                        <td>${s.resposavel || s.responsavel || 'N/A'}</td>
-                        <td>${formatarData(s.data_solicitacao)}</td>
-                        <td>${s.setor || 'N/A'}</td>
-                        <td>${s.observacao || '-'}</td>
-                        <td><span class="status-badge status-low">Concluída</span></td>
-                    `;
-                    tbodyHistorico.appendChild(row);
-                });
-            }
-
-            // Preencher pendentes (APENAS PENDENTES)
-            if (solicitacoesPendentes.length === 0) {
-                tbodyPendentes.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="text-center text-muted">
-                            <i class="fas fa-check-circle" style="color: #28a745;"></i> 
-                            Nenhuma manutenção pendente
-                        </td>
-                    </tr>
-                `;
-            } else {
-                solicitacoesPendentes.forEach(s => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${s.id || 'N/A'}</td>
-                        <td>${s.item || 'N/A'}</td>
-                        <td>${s.resposavel || s.responsavel || 'N/A'}</td>
-                        <td>${formatarData(s.data_solicitacao)}</td>
-                        <td>${s.setor || 'N/A'}</td>
-                        <td>${s.observacao || '-'}</td>
-                        <td><span class="status-badge status-high">Pendente</span></td>
-                    `;
-                    tbodyPendentes.appendChild(row);
-                });
-            }
-        }
-
-        // Funções auxiliares para carregar seções específicas
-        function carregarHistorico() {
-            console.log('Carregando histórico...');
-            if (typeof atualizarTabelas === 'function') {
-                atualizarTabelas();
-            } else {
-                // Fallback
-                const tbody = document.getElementById('maintenance-history-body');
-                if (tbody) {
-                    tbody.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> Carregando...</td></tr>';
-                    setTimeout(() => {
-                        atualizarTabelas();
-                    }, 500);
-                }
-            }
-        }
-
-        function carregarPendentes() {
-            console.log('Carregando pendentes...');
-            if (typeof atualizarTabelas === 'function') {
-                atualizarTabelas();
-            } else {
-                // Fallback
-                const tbody = document.getElementById('maintenance-pending-body');
-                if (tbody) {
-                    tbody.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> Carregando...</td></tr>';
-                    setTimeout(() => {
-                        atualizarTabelas();
-                    }, 500);
-                }
-            }
-        }
-
-        function atualizarMetricas() {
-            console.log('Atualizando métricas...');
-            if (typeof buscarDados === 'function') {
-                buscarDados();
-            }
-        }
-
-        // Função para formatar data
-        function formatarData(dataString) {
-            if (!dataString) return '-';
-            try {
-                const data = new Date(dataString);
-                if (isNaN(data.getTime())) return dataString;
-                return data.toLocaleDateString('pt-BR');
-            } catch (e) {
-                return dataString;
-            }
-        }
-
-        // Inicializar a página
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Sistema de Manutenção inicializando...');
-            
-            // Configurar data atual
-            const today = new Date().toISOString().split('T')[0];
-            const dateField = document.getElementById('maintenance-date');
-            if (dateField) dateField.value = today;
-            
-            // Configurar o formulário de registro
-            const form = document.getElementById('maintenance-register-form');
-            const submitBtn = document.getElementById('submit-btn');
-            
-            if (form && submitBtn) {
-                // Remover event listeners antigos para evitar duplicação
-                const newForm = form.cloneNode(true);
-                form.parentNode.replaceChild(newForm, form);
-                
-                // Configurar novo event listener
-                document.getElementById('maintenance-register-form').addEventListener('submit', async function(e) {
-                    e.preventDefault();
-
-                    // Desabilitar botão
-                    const originalText = submitBtn.innerHTML;
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando no banco...';
-                    submitBtn.disabled = true;
-
-                    try {
-                        // Coletar dados do formulário
-                        const item = document.getElementById('maintenance-os-number').value;
-                        const tipo = document.getElementById("maintenance-type").value;
-                        const data_manutencao = document.getElementById("maintenance-date").value;
-                        const responsavel = document.getElementById("maintenance-technician").value.trim();
-                        const tempo_manutencao = document.getElementById("maintenance-duration").value;
-                        const observacao = document.getElementById("maintenance-problem").value;
-                        const setor = document.getElementById("maintenance-status").value;
-
-                        // Validação
-                        if (!responsavel) {
-                            alert("Preencha o campo Técnico Responsável");
-                            document.getElementById("maintenance-technician").focus();
-                            submitBtn.innerHTML = originalText;
-                            submitBtn.disabled = false;
-                            return;
-                        }
-
-                        // Preparar dados para envio
-                        const inserirManutencao = {
-                            item: item,
-                            tipo: tipo,
-                            data_manutencao: data_manutencao,
-                            responsavel: responsavel,
-                            tempo_manutencao: tempo_manutencao,
-                            observacao: observacao,
-                            setor: setor
-                        };
-
-                        console.log('Enviando dados:', inserirManutencao);
-
-                        // Enviar para o servidor
-                        const response = await fetch(`${API_URL}/manutencao`, {
-                            method: "POST",
-                            headers: { 
-                                "Content-Type": "application/json" 
-                            },
-                            body: JSON.stringify(inserirManutencao)
-                        });
-
-                        if (response.ok) {
-                            const resultado = await response.json();
-                            console.log('Resposta do servidor:', resultado);
-                            
-                            alert(`✅ Manutenção registrada com sucesso!\n\nItem: ${item}\nTécnico: ${responsavel}\nData: ${formatarData(data_manutencao)}`);
-                            
-                            // Limpar formulário
-                            document.getElementById('maintenance-register-form').reset();
-                            document.getElementById('maintenance-date').value = today;
-                            
-                            // Atualizar dados
-                            await buscarDados();
-                            
-                            // Se estiver na seção de histórico, atualizar tabela
-                            if (document.getElementById('maintenance-section-historico').classList.contains('active')) {
-                                atualizarTabelas();
-                            }
-                            
-                        } else {
-                            const errorText = await response.text();
-                            throw new Error(`Erro ${response.status}: ${errorText}`);
-                        }
-
-                    } catch (error) {
-                        console.error('Erro ao registrar manutenção:', error);
-                        
-                        if (error.message.includes('Failed to fetch')) {
-                            alert('❌ ERRO: Não foi possível conectar ao servidor.\n\nVerifique:\n1. Se o servidor Java está rodando\n2. Se a porta 1111 está correta\n3. Acesse: http://localhost:1111/');
-                        } else {
-                            alert('❌ Erro ao registrar manutenção: ' + error.message);
-                        }
-                    } finally {
-                        // Reativar botão
-                        submitBtn.innerHTML = originalText;
-                        submitBtn.disabled = false;
-                    }
-                });
-            }
-            
-            // Configurar logout
-            const logoutBtn = document.getElementById('logout-btn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (confirm('Deseja realmente sair do sistema?')) {
-                        window.location.href = 'login.html';
-                    }
-                });
-            }
-            
-            // Carregar dados iniciais
-            buscarDados();
-            
-            console.log('Sistema de Manutenção inicializado com sucesso!');
+        pendentes.forEach(p => {
+            const option = document.createElement("option");
+            option.value = p.id;
+            option.textContent = `ID ${p.id} - ${p.item} (${p.setor})`;
+            select.appendChild(option);
         });
-    </script>
-</body>
-</html>
+
+        console.log(dadosManutencao)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+function atualizarTabelas(){
+    const tbody1 = document.getElementById("maintenance-history-body");
+    if(!tbody1) return;
+    const tbody2 = document.getElementById("maintenance-pending-body");
+    if(!tbody2) return;
+
+    tbody1.innerHTML = '';
+    tbody2.innerHTML = '';
+
+    const solicitacoesConcluidas = solicitacoes.filter(s => s.status === "CONCLUIDA");
+    const solicitacoesPendentes = solicitacoes.filter(s => s.status === "PENDENTE");
+
+    console.log(solicitacoesConcluidas)
+
+    solicitacoesConcluidas.forEach(s => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${s.id}</td>
+                    <td>${s.item}</td>
+                    <td>${s.resposavel}</td>
+                    <td>${s.data_solicitacao}</td>
+                    <td>${s.setor}</td>
+                    <td>${s.observacao}</td>
+                    <td><span class="status-badge status-low">${s.status}</span></td>
+                `;
+                tbody1.appendChild(row);
+            });
+
+        solicitacoesPendentes.forEach(s => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${s.id}</td>
+                    <td>${s.item}</td>
+                    <td>${s.resposavel}</td>
+                    <td>${s.data_solicitacao}</td>
+                    <td>${s.setor}</td>
+                    <td>${s.observacao}</td>
+                    <td><span class="status-badge status-low">${s.status}</span></td>
+                `;
+                tbody2.appendChild(row);
+            });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    buscarDados();
+    // listarPendentes();
+
+    document.getElementById("maintenance-register-form").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        inserirManutencao = [];
+
+        const item = document.getElementById('maintenance-os-number').value;
+        const tipo = document.getElementById("maintenance-type").value;
+        const data_manutencao = document.getElementById("maintenance-date").value;
+        const responsavel = document.getElementById("maintenance-technician").value.trim();
+        const tempo_manutencao = document.getElementById("maintenance-duration").value;
+        const observacao = document.getElementById("maintenance-problem").value;
+        const setor = document.getElementById("maintenance-status").value;
+
+        if(!responsavel){
+                alert("Preencha o campo");
+                document.getElementById("maintenance-technician").focus();
+                return;
+        }
+
+        inserirManutencao = {
+            item: item,
+            tempo_manutencao: tempo_manutencao,
+            data_manutencao: data_manutencao,
+            setor: setor,
+            observacao: observacao,
+            responsavel: responsavel,
+            tipo:tipo
+    }
+        async function cadastrarDados(){
+
+        try {
+        const response = await fetch("http://localhost:1111/manutencao", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(inserirManutencao)
+        })
+        } catch (error) {
+            console.log(error)   
+        }
+        }
+
+    cadastrarDados();
+
+    })
+   
+})
