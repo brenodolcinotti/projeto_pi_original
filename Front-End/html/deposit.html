@@ -54,10 +54,9 @@
                     </button>
                 </div>
 
-                <!--HTML dos cards que puxa em tempo real-->
+                <!-- Seção de Solicitações -->
                 <div class="employee-section active" id="employee-section-solicitacoes">
                     <div class="employee-metrics">
-
                         <!-- Solicitações Pendentes -->
                         <div class="employee-metric-card">
                             <div class="employee-metric-header">
@@ -80,8 +79,6 @@
                             <div class="employee-metric-label">Solicitações Concluídas</div>
                         </div>
                     </div>
-                </div>
-
 
                     <div class="card employee-card">
                         <h2 class="card-title employee-title">Minhas Solicitações Recentes</h2>
@@ -143,6 +140,7 @@
                     </div>
                 </div>
 
+                <!-- Seção de Movimentação -->
                 <div class="employee-section" id="employee-section-movimentacao">
                     <div class="employee-metrics">
                         <div class="employee-metric-card">
@@ -185,7 +183,7 @@
                                     <label for="employee-transaction-material">Nome do Produto</label>
                                     <div class="input-with-icon">
                                         <i class="input-icon fas fa-box"></i>
-                                        <input type="text" placeholder="Digite o nome do material" id="employee-transaction-name">
+                                        <input type="text" placeholder="Digite o nome do material" id="employee-transaction-name" required>
                                     </div>
                                 </div>
                                 
@@ -208,8 +206,8 @@
                                 <div class="form-group">
                                     <label for="employee-transaction-date">Data</label>
                                     <div class="input-with-icon">
-                                        <i class="input-icon fas fa-project-diagram"></i>
-                                        <input type="date" placeholder="Digite a data" id="employee-transaction-date" required>
+                                        <i class="input-icon fas fa-calendar-alt"></i>
+                                        <input type="date" id="employee-transaction-date" required>
                                     </div>
                                 </div>
 
@@ -265,6 +263,7 @@
                     </div>
                 </div>
 
+                <!-- Seção de Manutenção -->
                 <div class="employee-section" id="employee-section-manutencao">
                     <div class="employee-metrics">
                         <div class="employee-metric-card">
@@ -472,7 +471,6 @@
         // Função para solicitar manutenção
         function solicitarManutencao(equipamento) {
             alert(`Solicitação de manutenção para ${equipamento} enviada!`);
-            // Aqui você pode adicionar lógica para enviar a solicitação para o servidor
         }
 
         // Inicializar a página
@@ -507,16 +505,6 @@
                 });
             }
             
-            // Configurar evento de submit para o formulário de transação
-            const transactionForm = document.getElementById('employee-transaction-form');
-            if (transactionForm) {
-                transactionForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    alert('Movimentação registrada com sucesso!');
-                    transactionForm.reset();
-                });
-            }
-            
             // Configurar botões de tipo de transação
             const depositBtn = document.getElementById('employee-deposit-btn');
             const withdrawalBtn = document.getElementById('employee-withdrawal-btn');
@@ -527,12 +515,116 @@
                     depositBtn.classList.add('active');
                     withdrawalBtn.classList.remove('active');
                     submitBtn.innerHTML = '<i class="fas fa-check-circle"></i><span>Registrar Entrada</span>';
+                    submitBtn.className = 'btn btn-block btn-success';
                 });
                 
                 withdrawalBtn.addEventListener('click', function() {
                     withdrawalBtn.classList.add('active');
                     depositBtn.classList.remove('active');
                     submitBtn.innerHTML = '<i class="fas fa-check-circle"></i><span>Registrar Saída</span>';
+                    submitBtn.className = 'btn btn-block btn-danger';
+                });
+            }
+            
+            // Configurar evento de submit para o formulário de transação COM CONEXÃO AO SEU BANCO
+            const transactionForm = document.getElementById('employee-transaction-form');
+            if (transactionForm) {
+                transactionForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    // Salvar o texto original do botão
+                    const submitBtn = document.getElementById('employee-transaction-submit-btn');
+                    const originalBtnText = submitBtn.innerHTML;
+                    const originalBtnDisabled = submitBtn.disabled;
+                    
+                    try {
+                        // Desabilitar botão e mostrar loading
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+                        
+                        // Determinar tipo de transação
+                        const isDeposit = depositBtn.classList.contains('active');
+                        const tipoTransacao = isDeposit ? 'entrada' : 'saida';
+                        
+                        // Coletar dados do formulário
+                        const dados = {
+                            nome_produto: document.getElementById('employee-transaction-name').value.trim(),
+                            quantidade: parseInt(document.getElementById('employee-transaction-quantity').value),
+                            setor: document.getElementById('employee-transaction-location').value.trim(),
+                            data: document.getElementById('employee-transaction-date').value,
+                            observacao: document.getElementById('employee-transaction-notes').value.trim(),
+                            tipo: tipoTransacao
+                        };
+                        
+                        // Validação
+                        if (!dados.nome_produto || dados.quantidade <= 0 || !dados.setor || !dados.data) {
+                            alert('Por favor, preencha todos os campos obrigatórios corretamente!');
+                            return;
+                        }
+                        
+                        console.log('Enviando dados:', dados);
+                        
+                        // Definir endpoint baseado no tipo de transação
+                        let endpoint;
+                        let dadosFormatados;
+                        
+                        if (isDeposit) {
+                            endpoint = 'http://localhost:1111/entrada-estoque';
+                            dadosFormatados = {
+                                nome_produto: dados.nome_produto,
+                                quantidade: dados.quantidade,
+                                setor: dados.setor,
+                                data_entrada: dados.data,
+                                observacao: dados.observacao
+                            };
+                        } else {
+                            endpoint = 'http://localhost:1111/saida-estoque';
+                            dadosFormatados = {
+                                nome_produto: dados.nome_produto,
+                                quantidade: dados.quantidade,
+                                setor: dados.setor,
+                                data_saida: dados.data,
+                                observacao: dados.observacao
+                            };
+                        }
+                        
+                        // Enviar para o backend
+                        const response = await fetch(endpoint, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(dadosFormatados)
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error(`Erro HTTP: ${response.status}`);
+                        }
+                        
+                        const resultado = await response.json();
+                        console.log('Resposta do servidor:', resultado);
+                        
+                        alert(`✅ ${isDeposit ? 'Entrada' : 'Saída'} registrada com sucesso!`);
+                        
+                        // Limpar formulário
+                        transactionForm.reset();
+                        
+                        // Restaurar data atual
+                        document.getElementById('employee-transaction-date').value = new Date().toISOString().split('T')[0];
+                        
+                        // Atualizar contadores (se houver função para isso)
+                        if (window.carregarDadosEntrada) {
+                            carregarDadosEntrada();
+                        }
+                        
+                    } catch (error) {
+                        console.error('Erro ao enviar transação:', error);
+                        alert(`❌ Erro ao registrar transação: ${error.message}`);
+                    } finally {
+                        // Restaurar botão
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                    }
                 });
             }
         });
