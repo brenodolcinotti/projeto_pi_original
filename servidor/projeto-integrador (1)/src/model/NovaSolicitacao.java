@@ -7,27 +7,27 @@ public class NovaSolicitacao {
     private String data_solicitacao;
     private String setor;
     private String observacao;
-    private String resposavel;
+    private String responsavel;
     private String status;
 
 
-    public NovaSolicitacao(String item, String data_solicitacao, String setor, String observacao, String resposavel, String status) {
+    public NovaSolicitacao(String item, String data_solicitacao, String setor, String observacao, String responsavel, String status) {
         this.item = item;
         this.data_solicitacao = data_solicitacao;
         this.setor = setor;
         this.observacao = observacao;
-        this.resposavel = resposavel;
+        this.responsavel = responsavel;
         this.status = status;
     }
 
     public NovaSolicitacao(long id, String item, String data_solicitacao, String setor, String observacao,
-            String resposavel, String status) {
+            String responsavel, String status) {
         this.id = id;
         this.item = item;
         this.data_solicitacao = data_solicitacao;
         this.setor = setor;
         this.observacao = observacao;
-        this.resposavel = resposavel;
+        this.responsavel = responsavel;
         this.status = status;
     }
 
@@ -64,11 +64,11 @@ public class NovaSolicitacao {
     public void setObservacao(String observacao) {
         this.observacao = observacao;
     }
-    public String getResposavel() {
-        return resposavel;
+    public String getResponsavel() {
+        return responsavel;
     }
-    public void setResposavel(String resposavel) {
-        this.resposavel = resposavel;
+    public void setResponsavel(String responsavel) {
+        this.responsavel = responsavel;
     }
 
     public String getStatus() {
@@ -82,7 +82,7 @@ public class NovaSolicitacao {
     @Override
     public String toString() {
         return "NovaSolicitacao [id=" + id + ", item=" + item + ", data_solicitacao=" + data_solicitacao + ", setor="
-                + setor + ", observacao=" + observacao + ", resposavel=" + resposavel + ", status=" + status + "]";
+                + setor + ", observacao=" + observacao + ", resposavel=" + responsavel + ", status=" + status + "]";
     }
     
 }

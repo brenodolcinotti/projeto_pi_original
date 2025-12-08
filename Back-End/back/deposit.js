@@ -257,12 +257,11 @@ let solicitacoes = [];
             observacao: observacao
         }
 
-        const formElement = this; // Captura o elemento do formulário para resetar depois
+        const formElement = this; 
 
        const handleSubmit = async () => {
 
-    // Inicializar como null garante que a variável existe, mas tem um valor seguro
-    let response = null; // Alteração mínima aqui
+    let response = null; 
 
     try {
         if (entradaMaterial) {
@@ -745,6 +744,7 @@ document.addEventListener('DOMContentLoaded', function() {
             observacao: observacao,
             status: "PENDENTE",
     }
+    console.log(inserirManutencao)
         async function cadastrarDados(){
 
         try {
@@ -753,6 +753,10 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(inserirManutencao)
         })
+
+        if(response.ok){
+            alert("Solicitação inserida com sucesso")
+        }
         } catch (error) {
             console.log(error)   
         }

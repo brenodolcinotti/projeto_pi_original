@@ -1,9 +1,7 @@
 package api;
 
-import static spark.Spark.get;
 import static spark.Spark.*;
-import static spark.Spark.port;
-import static spark.Spark.after;
+
 import spark.Filter;
 import spark.Request;
 import spark.Response;
@@ -11,15 +9,18 @@ import com.google.gson.Gson;
 
 import model.EntradaEstoque;
 import model.Manutencao;
+import model.NovaSolicitacao;
 import model.SaidaEstoque;
 import dao.dao;
 import dao.postDAO;
+import dao.putDAO;
 
 public class Api {
 
     private static final Gson gson = new Gson();
     private static final dao dao = new dao();
     private static final postDAO postDAO = new postDAO();
+    private static final putDAO putDAO = new putDAO();
 
     private static final String APPLICATION_JSON = "application/json";
     
@@ -101,6 +102,46 @@ public class Api {
             }
         });
 
+
+        
+        post("/nova-solicitacao", (request, response) -> {
+            try{
+                NovaSolicitacao nova = gson.fromJson(request.body(), NovaSolicitacao.class);
+                postDAO.novaSolicitacao(nova);
+
+                response.status(201);
+                return gson.toJson(nova);
+            }catch (Exception e){
+                response.status(500);
+                System.err.println("Erro ao processar requisição post" + e.getMessage());
+                e.printStackTrace();
+                return "Erro";
+            }
+        });
+
+        //put
+            put("/nova-solicitacao/:id",(request, response) ->  {
+                try {
+                    Long id = Long.parseLong(request.params(":id")); // Usa Long
+
+                    NovaSolicitacao nova = gson.fromJson(request.body(), NovaSolicitacao.class);
+                    nova.setId(id); // garante que o ID da URL seja usado
+
+                    putDAO.atualizar(nova);
+
+                    response.status(200); // OK
+                    return gson.toJson(nova);
+
+                } catch (NumberFormatException e) {
+                    response.status(400); // Bad Request
+                    return "{\"mensagem\": \"Formato de ID inválido.\"}";
+                } catch (Exception e) {
+                    response.status(500);
+                    System.err.println("Erro ao processar requisição PUT: " + e.getMessage());
+                    e.printStackTrace();
+                    return "{\"mensagem\": \"Erro ao atualizar produto.\"}";
+                }
+        });
 
 
         // CORS para fazer a api funcionar

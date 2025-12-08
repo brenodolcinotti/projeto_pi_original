@@ -437,6 +437,62 @@
         }
     }
 
+    async function inserirManutencao() {
+
+        const item = document.getElementById('maintenance-os-number')?.value;
+        const tipo = document.getElementById("maintenance-type")?.value;
+        const data_manutencao = document.getElementById("maintenance-date")?.value;
+        const responsavel = document.getElementById("maintenance-technician")?.value.trim();
+        const tempo_manutencao = document.getElementById("maintenance-duration")?.value;
+        const observacao = document.getElementById("maintenance-problem")?.value;
+        const setor = document.getElementById("manutencao-setor")?.value;
+
+        // Validação - usa o Operador de Encadeamento Opcional (?.) para evitar 'Cannot read properties of null'
+        if(!item || !tipo || !data_manutencao || !responsavel || !tempo_manutencao || !observacao || !setor){
+            alert("Preencha todos os campos obrigatórios do formulário antes de concluir a manutenção.");
+            return;
+        }
+
+        dadosParaInserir = {
+            item: item,
+            tempo_manutencao: tempo_manutencao,
+            data_manutencao : data_manutencao,
+            setor:setor,
+            observacao:observacao,
+            responsavel:responsavel,
+            tipo:tipo
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/manutencao`, {
+                method: "POST", // PUT para substituir o registro completo
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(dadosParaInserir),
+            });
+
+            if (response.ok) {
+                alert("Manutenção registrada com sucesso!");
+                
+                // Recarregar TUDO após a atualização
+                await buscarDados(); 
+                atualizarTabelas(); 
+                document.getElementById("maintenance-register-form")?.reset();
+                // Limpa o select após o reset
+                document.getElementById("pendente-manutencao").value = ""; 
+            } else {
+                const errorText = await response.text();
+                alert(`Falha ao atualizar status. Status: ${response.status}. Detalhes: ${errorText}`);
+            }
+        
+        } catch (error) {
+            console.error("Erro de rede/conexão:", error);
+            alert("Erro ao tentar conectar com o servidor.");
+        }
+        
+    }
+
 
     // ----------------------------------------------------------------------
     // 5. FUNÇÕES DE MANIPULAÇÃO DO DOM (TABELAS)
@@ -513,6 +569,8 @@
         if (formRegister) {
             formRegister.addEventListener("submit", function(e) {
                 e.preventDefault();
+
+                inserirManutencao()
 
                 // Usa o ID armazenado ou o valor atual do select
                 const idParaAtualizar = idSolicitacaoSelecionada || document.getElementById("pendente-manutencao")?.value; 

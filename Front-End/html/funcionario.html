@@ -664,6 +664,147 @@
             initializeTransactionButtons();
         }
     });
+
+     async function registrarMovimentacao(tipo) {
+
+        // const tipo = ""
+
+        // document.getElementById("employee-deposit-btn").addEventListener('click',function() {
+        //     tipo = 'entrada'
+        // })
+        //  document.getElementById("employee-withdrawal-btn").addEventListener('click',function() {
+        //     tipo = 'saida'
+        // })
+        
+
+            try {
+                // Coletar dados do formulário
+                const nome_produto = document.getElementById('employee-transaction-name').value.trim();
+                const quantidade = parseInt(document.getElementById('employee-transaction-quantity').value);
+                const setor = document.getElementById('employee-transaction-location').value.trim();
+                const data = document.getElementById('employee-transaction-date').value;
+                const observacao = document.getElementById('employee-transaction-notes').value.trim();
+
+                // Validação básica
+                if (!nome_produto || !quantidade || !setor || !data) {
+                    alert('Por favor, preencha todos os campos obrigatórios!');
+                    return false;
+                }
+
+                if (quantidade <= 0) {
+                    alert('A quantidade deve ser maior que zero!');
+                    return false;
+                }
+
+                // Preparar dados para envio
+                const dados = {
+                    nome_produto: nome_produto,
+                    quantidade: quantidade,
+                    setor: setor,
+                    observacao: observacao || ''
+                };
+
+                let endpoint;
+                
+                if (tipo === 'entrada') {
+                    endpoint = 'http://localhost:1111/entrada-estoque';
+                    dados.data_entrada = data;
+                } else if (tipo === 'saida') {
+                    endpoint = 'http://localhost:1111/saida-estoque';
+                    dados.data_saida = data;
+                } else {
+                    console.error('Tipo de movimentação inválido:', tipo);
+                    return false;
+                }
+
+                console.log('Enviando dados para:', endpoint);
+                console.log('Dados:', dados);
+
+                // Enviar para o backend
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dados)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Erro HTTP ${response.status}: ${errorText}`);
+                }
+
+                const resultado = await response.json();
+                console.log('Resposta do servidor:', resultado);
+
+                if (resultado.success || resultado.message) {
+                    alert(`✅ ${tipo === 'entrada' ? 'Entrada' : 'Saída'} registrada com sucesso!`);
+                    // Limpar formulário após sucesso
+                    document.getElementById('employee-transaction-form').reset();
+                    // Restaurar data atual
+                    document.getElementById('employee-transaction-date').value = new Date().toISOString().split('T')[0];
+                    return true;
+                }
+
+            } catch (error) {
+                console.error('Erro ao registrar movimentação:', error);
+                alert(`❌ Erro ao registrar ${tipo === 'entrada' ? 'entrada' : 'saída'}: ${error.message}`);
+                return false;
+            }
+        }
+
+        // Configurar botões de tipo de transação
+            const depositBtn = document.getElementById('employee-deposit-btn');
+            const withdrawalBtn = document.getElementById('employee-withdrawal-btn');
+            const submitBtn = document.getElementById('employee-transaction-submit-btn');
+            
+            if (depositBtn && withdrawalBtn && submitBtn) {
+                depositBtn.addEventListener('click', function() {
+                    depositBtn.classList.add('active');
+                    withdrawalBtn.classList.remove('active');
+                    submitBtn.innerHTML = '<i class="fas fa-check-circle"></i><span>Registrar Entrada</span>';
+                    submitBtn.className = 'btn btn-block btn-success';
+                });
+                
+                withdrawalBtn.addEventListener('click', function() {
+                    withdrawalBtn.classList.add('active');
+                    depositBtn.classList.remove('active');
+                    submitBtn.innerHTML = '<i class="fas fa-check-circle"></i><span>Registrar Saída</span>';
+                    submitBtn.className = 'btn btn-block btn-danger';
+                });
+            }
+
+        // Configurar evento de submit para o formulário de transação COM CONEXÃO AO SEU BANCO
+            const transactionForm = document.getElementById('employee-transaction-form');
+            if (transactionForm) {
+                transactionForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    // Salvar o texto original do botão
+                    const submitBtn = document.getElementById('employee-transaction-submit-btn');
+                    const originalBtnText = submitBtn.innerHTML;
+                    
+                    try {
+                        // Desabilitar botão e mostrar loading
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+                        
+                        // Determinar tipo de transação
+                        const isDeposit = depositBtn.classList.contains('active');
+                        const tipo = isDeposit ? 'entrada' : 'saida';
+                        
+                        // Chamar função de registro
+                        await registrarMovimentacao(tipo);
+                        
+                    } catch (error) {
+                        console.error('Erro no processamento do formulário:', error);
+                    } finally {
+                        // Restaurar botão
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                    }
+                });
+            }
 </script>
 
 </body>

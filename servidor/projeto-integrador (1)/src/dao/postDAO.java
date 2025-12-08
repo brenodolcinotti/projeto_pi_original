@@ -77,7 +77,7 @@ public class postDAO {
         }
     }
 
-     public void inserirManutencao(Manutencao manutencao){
+    public void inserirManutencao(Manutencao manutencao){
         String sql = "INSERT INTO manutencao (item, tempo_manutencao, data_manutencao, setor, observacao, responsavel, tipo) VALUES (?,?,?,?,?,?,?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
@@ -103,6 +103,35 @@ public class postDAO {
             
         } catch (SQLException e) {
             System.err.println("Erro ao inserir: " + manutencao.getId()+ ". Detalhes: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void novaSolicitacao(NovaSolicitacao nova){
+        String sql = "INSERT INTO nova_solicitacao (item, responsavel, data_solicitacao, setor, observacao, status) VALUES (?,?,?,?,?,?)";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+    ){
+
+        //definir as query
+        stmt.setString(1, nova.getItem());
+        stmt.setString(2, nova.getResponsavel());
+        stmt.setString(3, nova.getData_solicitacao());
+        stmt.setString(4, nova.getSetor());
+        stmt.setString(5, nova.getObservacao());
+        stmt.setString(6, nova.getStatus());
+
+        stmt.executeUpdate();
+
+        try(ResultSet rs = stmt.getGeneratedKeys()){
+            if(rs.next()){
+                nova.setId(rs.getLong(1));
+            }
+        }
+            
+        } catch (SQLException e) {
+            System.err.println("Erro ao inserir: " + nova.getId()+ ". Detalhes: " + e.getMessage());
             e.printStackTrace();
         }
     }
