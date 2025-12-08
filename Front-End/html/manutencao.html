@@ -218,375 +218,24 @@
             </div>
         </div>
     </section>
-
-    <!-- CÓDIGO JAVASCRIPT COMPLETO -->
-   <script>
-    // URL do servidor
+    <script>
+    // ----------------------------------------------------------------------
+    // 1. CONFIGURAÇÃO E VARIÁVEIS GLOBAIS
+    // ----------------------------------------------------------------------
     const API_URL = 'http://localhost:1111';
-   
-    // Variáveis para armazenar dados
-    let dadosManutencao = [];
+    
+    // Variáveis que armazenarão os dados (melhor como 'let' para reatribuição)
     let solicitacoes = [];
-   
-    // 🛑 NOVA VARIÁVEL GLOBAL PARA ARMAZENAR O ID SELECIONADO
-    let idSolicitacaoAtual = null;
-
-    window.onload = function(){
-        listarPendentes();
-    }
-
-    async function listarPendentes() {
-        let pendentes;
-        const select = document.getElementById("pendente-manutencao");
-       
-        if (!select) {
-            console.error("Elemento 'pendente-manutencao' não encontrado.");
-            return;
-        }
-
-        try {
-            const response = await fetch("http://localhost:1111/pendente")
-            const data = await response.json()
-
-            pendentes = data;
-            console.log("Todas as Solicitações pendentes:", pendentes);
-           
-            // Armazena todas as solicitações no array global para uso posterior (otimização)
-            solicitacoes = data;
-           
-            select.innerHTML = '<option value="" disabled selected>Selecione o ID da manutenção pendente</option>'; // Adiciona placeholder
-
-            pendentes.forEach(p => {
-                const option = document.createElement("option");
-                option.value = p.id;
-                option.textContent = `ID ${p.id} - ${p.item} (${p.setor})`;
-                select.appendChild(option);
-            });
-        } catch (error) {
-            console.error("Erro ao listar solicitações pendentes:", error);
-            select.innerHTML = '<option value="">Erro ao carregar dados</option>';
-        }
-    }
-
-    async function listarNomes(idSelecionado) {
-        console.log("ID Selecionado:", idSelecionado);
-        const idParaBuscar = parseInt(idSelecionado);
-
-        // 🛑 MUDANÇA: Atualiza a variável global
-        idSolicitacaoAtual = idParaBuscar;
-       
-        // Usa o array global 'solicitacoes' se já tiver sido preenchido
-        const itens = solicitacoes.length > 0 ? solicitacoes : await (await fetch(`${API_URL}/nova-solicitacao`)).json();
-
-        // Limpa os campos se o ID selecionado for inválido (como o placeholder vazio)
-        if (!idParaBuscar || isNaN(idParaBuscar)) {
-            const setorElement = document.getElementById("manutencao-setor");
-            const itemElement = document.getElementById("maintenance-os-number");
-            if (setorElement) setorElement.value = '';
-            if (itemElement) itemElement.value = '';
-            idSolicitacaoAtual = null;
-            return;
-        }
-
-        try {
-            // Busca o item específico no array
-            const itemEncontrado = itens.find(n =>
-                n.id === idParaBuscar
-            );
-           
-            if (itemEncontrado) {
-                const setorValor = itemEncontrado.setor || '';
-                const itemValor = itemEncontrado.item || '';
-               
-                const setorElement = document.getElementById("manutencao-setor");
-                const itemElement = document.getElementById("maintenance-os-number");
-               
-                // 🛑 CORREÇÃO: Usando .value para inputs e verificando a existência
-                if (setorElement) setorElement.value = setorValor;
-                if (itemElement) itemElement.value = itemValor;
-               
-            } else {
-                console.warn(`Item com ID ${idParaBuscar} não encontrado no array.`);
-            }
-
-        } catch (error) {
-            console.error("Erro ao buscar dados ou erro de rede:", error);
-        }
-    }
-
-    document.getElementById("maintenance-register-form").addEventListener("submit", function(e) {
-        e.preventDefault();
-
-        // 🛑 MUDANÇA: PEGAR O ID DA VARIÁVEL GLOBAL
-        const idParaAtualizar = idSolicitacaoAtual;
-
-        if (!idParaAtualizar) {
-            alert("Por favor, selecione uma Solicitação Pendente válida.");
-            return;
-        }
-
-        atualizarDados(idParaAtualizar);
-    });
-       
-    // A função recebe o ID capturado no event listener
-    async function atualizarDados(idSolicitacao) {
-
-        // 1. CAPTURAR TODOS OS DADOS DO FORMULÁRIO
-        const item = document.getElementById('maintenance-os-number').value;
-        const tipo = document.getElementById("maintenance-type").value;
-        const data_manutencao = document.getElementById("maintenance-date").value;
-        const responsavel = document.getElementById("maintenance-technician").value.trim();
-        const tempo_manutencao = document.getElementById("maintenance-duration").value;
-        const observacao = document.getElementById("maintenance-problem").value;
-        const setor = document.getElementById("maintenance-status").value;
-
-        // 2. VALIDAÇÃO
-        if(!responsavel || !item || !data_manutencao || !tipo || !tempo_manutencao || !observacao || !setor){
-            alert("Preencha todos os campos obrigatórios do formulário antes de concluir a manutenção.");
-            return;
-        }
-
-        // 3. CONSTRUIR O PAYLOAD COMPLETO
-        const dadosParaAtualizar = {
-            // Envia o ID da solicitação
-            id: parseInt(idSolicitacao),
-           
-            // Dados da Manutenção (preenchidos no formulário)
-            item: item,
-            tipo: tipo,
-            data_manutencao: data_manutencao,
-            responsavel: responsavel,
-            tempo_manutencao: tempo_manutencao,
-            observacao: observacao,
-            setor: setor,
-           
-            // Status atualizado para CONCLUIDA
-            status: "CONCLUIDA"
-        };
-
-        try {
-            const response = await fetch(`${API_URL}/nova-solicitacao/${idSolicitacao}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(dadosParaAtualizar),
-            });
-
-            if (response.ok) {
-                alert("Solicitação de Manutenção atualizada para CONCLUÍDA com sucesso!");
-               
-                // Recarregar os dados/interface após o sucesso
-                if (typeof buscarDados === 'function') await buscarDados();
-                listarPendentes();
-                document.getElementById("maintenance-register-form").reset();
-            } else {
-                const errorText = await response.text();
-                alert(`Falha ao atualizar status. Status: ${response.status}. Detalhes: ${errorText}`);
-            }
-       
-        } catch (error) {
-            console.error("Erro de rede/conexão:", error);
-            alert("Erro ao tentar conectar com o servidor.");
-        }
-    }
-       
-    // Função para alternar entre seções
-    function switchMaintenanceSection(sectionId) {
-        console.log('Alternando para seção:', sectionId);
-       
-        // Remover classe active de todos os botões
-        document.querySelectorAll('.maintenance-control-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-       
-        // Remover classe active de todas as seções
-        document.querySelectorAll('.maintenance-section').forEach(section => {
-            section.classList.remove('active');
-        });
-       
-        // Adicionar classe active ao botão clicado
-        const btn = document.getElementById(`maintenance-btn-${sectionId}`);
-        if (btn) btn.classList.add('active');
-       
-        // Adicionar classe active à seção correspondente
-        const section = document.getElementById(`maintenance-section-${sectionId}`);
-        if (section) section.classList.add('active');
-       
-        // Carregar dados da seção
-        if (sectionId === 'historico') {
-            carregarHistorico();
-        } else if (sectionId === 'pendentes') {
-            carregarPendentes();
-        } else if (sectionId === 'registrar') {
-            // Atualizar métricas
-            atualizarMetricas();
-            // Limpar formulário quando abrir
-            const form = document.getElementById('maintenance-register-form');
-            if (form) {
-                form.reset();
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('maintenance-date').value = today;
-            }
-        }
-    }
-
-    // Função para buscar dados do servidor
-    async function buscarDados() {
-        console.log('Buscando dados do servidor...');
-       
-        try {
-            // Buscar manutenções registradas
-            const response = await fetch(`${API_URL}/manutencao`);
-            const data = await response.json();
-
-            // Buscar solicitações
-            const response1 = await fetch(`${API_URL}/nova-solicitacao`);
-            const data1 = await response1.json();
-
-            // Armazenar dados
-            solicitacoes = data1;
-            dadosManutencao = data;
-
-            // Calcular métricas
-            const pendentes = solicitacoes.filter(s => s.status === "PENDENTE").length;
-            const concluidas = solicitacoes.filter(s => s.status === "CONCLUIDA").length;
-
-            // Atualizar métricas na interface
-            document.getElementById("manutencao-concluida").innerHTML = concluidas;
-            document.getElementById("manutencao-pendente").innerHTML = pendentes;
-
-            console.log('Dados carregados:', {
-                manutencoes: dadosManutencao.length,
-                solicitacoes: solicitacoes.length,
-                pendentes: pendentes,
-                concluidas: concluidas
-            });
-
-            return true;
-           
-        } catch (error) {
-            console.error('Erro ao buscar dados:', error);
-            alert('Erro ao conectar com o servidor. Verifique se o servidor está rodando.');
-            return false;
-        }
-    }
-
-    // Função para atualizar tabelas
-    function atualizarTabelas() {
-        console.log('Atualizando tabelas...');
-       
-        const tbodyHistorico = document.getElementById("maintenance-history-body");
-        const tbodyPendentes = document.getElementById("maintenance-pending-body");
-       
-        if (!tbodyHistorico || !tbodyPendentes) return;
-
-        // Limpar tabelas
-        tbodyHistorico.innerHTML = '';
-        tbodyPendentes.innerHTML = '';
-
-        // Filtrar solicitações
-        const solicitacoesConcluidas = solicitacoes.filter(s => s.status === "CONCLUIDA");
-        const solicitacoesPendentes = solicitacoes.filter(s => s.status === "PENDENTE");
-
-        console.log('Dados para tabelas:', {
-            concluidas: solicitacoesConcluidas.length,
-            pendentes: solicitacoesPendentes.length
-        });
-
-        // Preencher histórico (APENAS CONCLUÍDOS)
-        if (solicitacoesConcluidas.length === 0) {
-            tbodyHistorico.innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center text-muted">
-                        <i class="fas fa-inbox"></i> Nenhuma manutenção concluída
-                    </td>
-                </tr>
-            `;
-        } else {
-            solicitacoesConcluidas.forEach(s => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${s.id || 'N/A'}</td>
-                    <td>${s.item || 'N/A'}</td>
-                    <td>${s.resposavel || s.responsavel || 'N/A'}</td>
-                    <td>${formatarData(s.data_solicitacao)}</td>
-                    <td>${s.setor || 'N/A'}</td>
-                    <td>${s.observacao || '-'}</td>
-                    <td><span class="status-badge status-low">Concluída</span></td>
-                `;
-                tbodyHistorico.appendChild(row);
-            });
-        }
-
-        // Preencher pendentes (APENAS PENDENTES)
-        if (solicitacoesPendentes.length === 0) {
-            tbodyPendentes.innerHTML = `
-                <tr>
-                    <td colspan="7" class="text-center text-muted">
-                        <i class="fas fa-check-circle" style="color: #28a745;"></i>
-                        Nenhuma manutenção pendente
-                    </td>
-                </tr>
-            `;
-        } else {
-            solicitacoesPendentes.forEach(s => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${s.id || 'N/A'}</td>
-                    <td>${s.item || 'N/A'}</td>
-                    <td>${s.resposavel || s.responsavel || 'N/A'}</td>
-                    <td>${formatarData(s.data_solicitacao)}</td>
-                    <td>${s.setor || 'N/A'}</td>
-                    <td>${s.observacao || '-'}</td>
-                    <td><span class="status-badge status-high">Pendente</span></td>
-                `;
-                tbodyPendentes.appendChild(row);
-            });
-        }
-    }
-
-    // Funções auxiliares para carregar seções específicas
-    function carregarHistorico() {
-        console.log('Carregando histórico...');
-        if (typeof atualizarTabelas === 'function') {
-            atualizarTabelas();
-        } else {
-            // Fallback
-            const tbody = document.getElementById('maintenance-history-body');
-            if (tbody) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> Carregando...</td></tr>';
-                setTimeout(() => {
-                    atualizarTabelas();
-                }, 500);
-            }
-        }
-    }
-
-    function carregarPendentes() {
-        console.log('Carregando pendentes...');
-        if (typeof atualizarTabelas === 'function') {
-            atualizarTabelas();
-        } else {
-            // Fallback
-            const tbody = document.getElementById('maintenance-pending-body');
-            if (tbody) {
-                tbody.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> Carregando...</td></tr>';
-                setTimeout(() => {
-                    atualizarTabelas();
-                }, 500);
-            }
-        }
-    }
-
-    function atualizarMetricas() {
-        console.log('Atualizando métricas...');
-        if (typeof buscarDados === 'function') {
-            buscarDados();
-        }
-    }
-
-    // Função para formatar data
+    
+    // O ID da solicitação selecionada é melhor capturado do DOM, mas a variável 'id'
+    // é mantida para compatibilidade com sua função 'listarNomes'.
+    let idSolicitacaoSelecionada = ""; 
+    
+    // ----------------------------------------------------------------------
+    // 2. FUNÇÕES AUXILIARES DE FORMATAÇÃO E VALIDAÇÃO
+    // ----------------------------------------------------------------------
+    
+    // Função para formatar data (mantida)
     function formatarData(dataString) {
         if (!dataString) return '-';
         try {
@@ -597,57 +246,325 @@
             return dataString;
         }
     }
+    
+    // ----------------------------------------------------------------------
+    // 3. FUNÇÕES DE BUSCA E ATUALIZAÇÃO DE DADOS (API)
+    // ----------------------------------------------------------------------
+    
+    /**
+     * Busca todos os dados do servidor e atualiza as métricas globais (solicitacoes).
+     */
+    async function buscarDados() {
+        console.log('Buscando dados do servidor e métricas...');
+        
+        try {
+            // Buscamos apenas as solicitações, pois o histórico é um subconjunto delas (status=CONCLUIDA)
+            const response = await fetch(`${API_URL}/nova-solicitacao`);
+            if (!response.ok) {
+                throw new Error(`Erro ${response.status} ao buscar solicitações.`);
+            }
+            solicitacoes = await response.json();
 
-    // Inicializar a página
+            const pendentes = solicitacoes.filter(s => s.status === "PENDENTE").length;
+            const concluidas = solicitacoes.filter(s => s.status === "CONCLUIDA").length;
+            
+            // ⚠️ ATENÇÃO: As métricas e o dropdown são atualizados aqui
+            const metricasConcluida = document.getElementById("manutencao-concluida");
+            const metricasPendente = document.getElementById("manutencao-pendente");
+
+            if (metricasConcluida) metricasConcluida.innerHTML = concluidas;
+            if (metricasPendente) metricasPendente.innerHTML = pendentes;
+
+            // Chamar a função de atualização do dropdown logo após carregar os dados
+            listarPendentes(solicitacoes.filter(s => s.status === "PENDENTE")); 
+
+            return true; // Sucesso na busca
+        } catch (error) {
+            console.error('Erro ao buscar dados:', error);
+            // Mensagem de erro para o usuário final
+            alert('Erro ao conectar com o servidor. Verifique se o backend está rodando em ' + API_URL);
+            return false; // Falha na busca
+        }
+    }
+    
+    /**
+     * Preenche o campo <select> com as solicitações PENDENTES.
+     * @param {Array} dadosPendentes - O array de solicitações PENDENTES.
+     */
+    function listarPendentes(dadosPendentes) {
+        const select = document.getElementById("pendente-manutencao");
+        
+        if (!select) {
+            console.error("Elemento 'pendente-manutencao' (SELECT) não encontrado.");
+            return;
+        }
+        
+        select.innerHTML = ''; // Limpa o select
+        
+        if (dadosPendentes.length === 0) {
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "Nenhuma solicitação pendente";
+            select.appendChild(option);
+            return;
+        }
+
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Selecione uma Solicitação";
+        select.appendChild(defaultOption);
+
+        dadosPendentes.forEach(p => {
+            const option = document.createElement("option");
+            option.value = p.id;
+            option.textContent = `ID ${p.id} - ${p.item} (${p.setor})`;
+            select.appendChild(option);
+        });
+
+        // ⚠️ ATENÇÃO: Se houver itens, atualiza o primeiro.
+        // O valor selecionado deve disparar a próxima função (listarNomes).
+        if(select.options.length > 1) {
+            idSolicitacaoSelecionada = select.value;
+            // Se o valor padrão não for o primeiro, dispara o preenchimento:
+            if(select.value) listarNomes(select.value); 
+        } else {
+            idSolicitacaoSelecionada = "";
+        }
+    }
+
+    /**
+     * Preenche os campos do formulário de manutenção com os dados da solicitação selecionada.
+     * É chamada no evento 'onchange' do <select id="pendente-manutencao">.
+     * @param {string} idSelecionado - O ID da solicitação selecionada.
+     */
+    async function listarNomes(idSelecionado) {
+        if (!idSelecionado) {
+            // Limpa os campos se nada for selecionado
+            document.getElementById("manutencao-setor").value = '';
+            document.getElementById("maintenance-os-number").value = '';
+            idSolicitacaoSelecionada = "";
+            return;
+        }
+        
+        idSolicitacaoSelecionada = idSelecionado;
+        const idParaBuscar = parseInt(idSelecionado); 
+        
+        // Busca o item no array 'solicitacoes' que já está carregado
+        const itemEncontrado = solicitacoes.find(n => 
+            n.id === idParaBuscar
+        );
+        
+        if (itemEncontrado) {
+            // Preenche os campos do formulário (presumimos que são <input> ou <select>)
+            const setorElement = document.getElementById("manutencao-setor"); // Este ID parece um erro de digitação do original, verificar no HTML
+            const itemElement = document.getElementById("maintenance-os-number");
+            
+            // Usando || '' para garantir que o valor não seja 'undefined' ou 'null'
+            if (setorElement) setorElement.value = itemEncontrado.setor || ''; 
+            if (itemElement) itemElement.value = itemEncontrado.item || ''; 
+
+            // Se você quer que o campo de Status reflita o setor/problema original:
+            const statusElement = document.getElementById("maintenance-status");
+            if (statusElement) statusElement.value = itemEncontrado.setor || '';
+            
+            // Se você quer preencher o problema original para referência:
+            const problemaElement = document.getElementById("maintenance-problem");
+            if (problemaElement) problemaElement.value = `Problema original: ${itemEncontrado.observacao || 'N/A'}\n\nSolução/Observação da Manutenção:`;
+            
+        } else {
+            console.warn(`Item com ID ${idParaBuscar} não encontrado nos dados carregados.`);
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // 4. FUNÇÃO PRINCIPAL DE ATUALIZAÇÃO (PUT)
+    // ----------------------------------------------------------------------
+
+    /**
+     * Envia os dados do formulário para o servidor para atualizar a solicitação para CONCLUIDA.
+     * @param {string} idSolicitacao - O ID da solicitação a ser atualizada.
+     */
+    async function atualizarDados(idSolicitacao) {
+
+        // 1. CAPTURAR E VALIDAR TODOS OS DADOS DO FORMULÁRIO
+        // ⚠️ ATENÇÃO: Se um desses IDs estiver errado no HTML, causará erro!
+        const item = document.getElementById('maintenance-os-number')?.value;
+        const tipo = document.getElementById("maintenance-type")?.value;
+        const data_manutencao = document.getElementById("maintenance-date")?.value;
+        const responsavel = document.getElementById("maintenance-technician")?.value.trim();
+        const tempo_manutencao = document.getElementById("maintenance-duration")?.value;
+        const observacao = document.getElementById("maintenance-problem")?.value;
+        const setor = document.getElementById("manutencao-setor")?.value;
+
+        // Validação - usa o Operador de Encadeamento Opcional (?.) para evitar 'Cannot read properties of null'
+        if(!item || !tipo || !data_manutencao || !responsavel || !tempo_manutencao || !observacao || !setor){
+            alert("Preencha todos os campos obrigatórios do formulário antes de concluir a manutenção.");
+            return;
+        }
+
+        // 2. CONSTRUIR O PAYLOAD (PUT/PATCH)
+        const dadosParaAtualizar = {
+            id: parseInt(idSolicitacao), 
+            status: "CONCLUIDA" // O principal objetivo é mudar o status
+        };
+
+        try {
+            const response = await fetch(`${API_URL}/nova-solicitacao/${idSolicitacao}`, {
+                method: "PUT", // PUT para substituir o registro completo
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(dadosParaAtualizar),
+            });
+
+            if (response.ok) {
+                alert("Solicitação de Manutenção atualizada para CONCLUÍDA com sucesso!");
+                
+                // Recarregar TUDO após a atualização
+                await buscarDados(); 
+                atualizarTabelas(); 
+                document.getElementById("maintenance-register-form")?.reset();
+                // Limpa o select após o reset
+                document.getElementById("pendente-manutencao").value = ""; 
+            } else {
+                const errorText = await response.text();
+                alert(`Falha ao atualizar status. Status: ${response.status}. Detalhes: ${errorText}`);
+            }
+        
+        } catch (error) {
+            console.error("Erro de rede/conexão:", error);
+            alert("Erro ao tentar conectar com o servidor.");
+        }
+    }
+
+
+    // ----------------------------------------------------------------------
+    // 5. FUNÇÕES DE MANIPULAÇÃO DO DOM (TABELAS)
+    // ----------------------------------------------------------------------
+
+    /**
+     * Atualiza as tabelas de histórico e pendentes com base no array global 'solicitacoes'.
+     */
+    function atualizarTabelas(){
+        const tbodyHistorico = document.getElementById("maintenance-history-body");
+        const tbodyPendentes = document.getElementById("maintenance-pending-body");
+        
+        if(!tbodyHistorico || !tbodyPendentes) return;
+
+        tbodyHistorico.innerHTML = '';
+        tbodyPendentes.innerHTML = '';
+
+        const solicitacoesConcluidas = solicitacoes.filter(s => s.status === "CONCLUIDA");
+        const solicitacoesPendentes = solicitacoes.filter(s => s.status === "PENDENTE");
+
+        // Preencher Histórico (Concluídas)
+        if (solicitacoesConcluidas.length === 0) {
+            tbodyHistorico.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Nenhuma manutenção concluída</td></tr>';
+        } else {
+            solicitacoesConcluidas.forEach(s => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${s.id || 'N/A'}</td>
+                    <td>${s.item || 'N/A'}</td>
+                    <td>${s.responsavel || 'N/A'}</td>
+                    <td>${formatarData(s.data_manutencao || s.data_solicitacao)}</td>
+                    <td>${s.setor || 'N/A'}</td>
+                    <td>${s.observacao || '-'}</td>
+                    <td><span class="status-badge status-low">CONCLUÍDA</span></td>
+                `;
+                tbodyHistorico.appendChild(row);
+            });
+        }
+
+        // Preencher Pendentes
+        if (solicitacoesPendentes.length === 0) {
+            tbodyPendentes.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Nenhuma manutenção pendente</td></tr>';
+        } else {
+            solicitacoesPendentes.forEach(s => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${s.id || 'N/A'}</td>
+                    <td>${s.item || 'N/A'}</td>
+                    <td>${s.responsavel || 'N/A'}</td>
+                    <td>${formatarData(s.data_solicitacao)}</td>
+                    <td>${s.setor || 'N/A'}</td>
+                    <td>${s.observacao || '-'}</td>
+                    <td><span class="status-badge status-high">PENDENTE</span></td>
+                `;
+                tbodyPendentes.appendChild(row);
+            });
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // 6. INICIALIZAÇÃO E EVENT LISTENERS
+    // ----------------------------------------------------------------------
+
     document.addEventListener('DOMContentLoaded', function() {
         console.log('Sistema de Manutenção inicializando...');
-       
-        // Configurar data atual
+        
+        // --- Setup Inicial ---
         const today = new Date().toISOString().split('T')[0];
         const dateField = document.getElementById('maintenance-date');
         if (dateField) dateField.value = today;
-       
-        // Configurar o formulário de registro (POST)
-        const form = document.getElementById('maintenance-register-form');
-        const submitBtn = document.getElementById('submit-btn');
-       
-        if (form && submitBtn) {
-            // Remover event listeners antigos para evitar duplicação
-            const newForm = form.cloneNode(true);
-            form.parentNode.replaceChild(newForm, form);
-           
-            // Configurar novo event listener
-            document.getElementById('maintenance-register-form').addEventListener('submit', async function(e) {
-                // Se a submissão for para ATUALIZAR (PUT/PATCH) e não POST, o e.preventDefault() já está OK.
-                // A lógica de PUT/PATCH já foi transferida para o Listener da Submissão (acima).
-               
-                // Esta seção é o antigo POST de registro, que parece estar incompleto
-                // para o fluxo atual (PUT/PATCH). Mantenho aqui o POST original para não quebrar.
 
-                // Coletar dados do formulário
-                const item = document.getElementById('maintenance-os-number').value;
-                const tipo = document.getElementById("maintenance-type").value;
-                const data_manutencao = document.getElementById("maintenance-date").value;
-                const responsavel = document.getElementById("maintenance-technician").value.trim();
-                const tempo_manutencao = document.getElementById("maintenance-duration").value;
-                const observacao = document.getElementById("maintenance-problem").value;
-                const setor = document.getElementById("maintenance-status").value;
+        // 1. Event Listener para o Formulário de Conclusão (PUT)
+        const formRegister = document.getElementById("maintenance-register-form");
+        if (formRegister) {
+            formRegister.addEventListener("submit", function(e) {
+                e.preventDefault();
 
-                // Validação (POST)
-                if (!responsavel) {
-                    alert("Preencha o campo Técnico Responsável");
-                    document.getElementById("maintenance-technician").focus();
+                // Usa o ID armazenado ou o valor atual do select
+                const idParaAtualizar = idSolicitacaoSelecionada || document.getElementById("pendente-manutencao")?.value; 
+
+                if (!idParaAtualizar) {
+                    alert("Por favor, selecione o ID da Solicitação Pendente para concluir.");
                     return;
                 }
 
-                // A lógica de PUT está no listener fora desta função. Esta parte aqui
-                // trata do POST de uma nova manutenção (se o seu sistema tiver essa funcionalidade).
-
-                // ... (Restante da lógica POST, omitida para brevidade, mas existente no seu código)
+                atualizarDados(idParaAtualizar); 
             });
+        } else {
+            console.error("Formulário 'maintenance-register-form' não encontrado.");
         }
-       
-        // Configurar logout
+        
+        // 2. Event Listener para o Dropdown de Pendentes (para preencher o form)
+        const selectPendente = document.getElementById("pendente-manutencao");
+        if (selectPendente) {
+            // Chama a função listarNomes sempre que um item for selecionado
+            selectPendente.addEventListener('change', (e) => listarNomes(e.target.value));
+        }
+        
+        // 3. Carregamento inicial de dados
+        buscarDados().then(success => {
+            if (success) {
+                atualizarTabelas();
+            }
+        });
+        
+        // Outros Listeners (Mantidos do seu código original)
+        // Você precisará garantir que os botões switchMaintenanceSection estejam ligados ao DOM
+        // e que 'carregarHistorico', 'carregarPendentes' e 'atualizarMetricas' chamem a 'atualizarTabelas' e 'buscarDados' corretamente.
+        
+        // Funções de controle de seção (necessárias se tiver botões no HTML)
+        window.switchMaintenanceSection = function(sectionId) {
+            document.querySelectorAll('.maintenance-control-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.maintenance-section').forEach(section => section.classList.remove('active'));
+            
+            const btn = document.getElementById(`maintenance-btn-${sectionId}`);
+            if (btn) btn.classList.add('active');
+            
+            const section = document.getElementById(`maintenance-section-${sectionId}`);
+            if (section) section.classList.add('active');
+            
+            if (sectionId === 'historico' || sectionId === 'pendentes') {
+                 atualizarTabelas(); // As tabelas serão atualizadas com os dados globais.
+            } else if (sectionId === 'registrar') {
+                 buscarDados(); // Apenas para atualizar as métricas
+            }
+        }
+        
+        // Configurar Logout (mantido)
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', function(e) {
@@ -657,12 +574,19 @@
                 }
             });
         }
-       
-        // Carregar dados iniciais
-        buscarDados();
-       
+        
         console.log('Sistema de Manutenção inicializado com sucesso!');
     });
+    
+    // ⚠️ ATENÇÃO: As duas últimas redefinições de funções no final do seu código original foram removidas, 
+    // pois duplicavam a lógica e causavam confusão de escopo. O código acima utiliza a primeira e única definição.
+    
+    // Para compatibilidade, exportamos as funções que são chamadas pelo DOM (HTML inline events)
+    // Embora não seja a melhor prática, se o seu HTML já as usa:
+    window.listarNomes = listarNomes;
+    window.switchMaintenanceSection = switchMaintenanceSection;
+    // window.atualizarDados = atualizarDados; // É chamada pelo event listener, não precisa ser global
+
 </script>
 </body>
 </html>

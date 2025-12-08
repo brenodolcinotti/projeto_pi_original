@@ -728,12 +728,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const item = document.getElementById('employee-maintenance-item').value;
         const responsavel = document.getElementById("employee-maintenance-responsavel").value;
         const data_solicitacao = document.getElementById("employee-data-solicitacao").value;
-        const observacao = document.getElementById("maintenance-problem").value;
-        const setor = document.getElementById("maintenance-status").value;
+        const observacao = document.getElementById("employee-maintenance-observacoes").value;
+        const setor = document.getElementById("employee-maintenance-setor").value;
 
         if(!responsavel){
                 alert("Preencha o campo");
-                document.getElementById("maintenance-technician").focus();
+                document.getElementById("employee-maintenance-responsavel").focus();
                 return;
         }
 
@@ -748,7 +748,7 @@ document.addEventListener('DOMContentLoaded', function() {
         async function cadastrarDados(){
 
         try {
-        const response = await fetch("http://localhost:1111/manutencao", {
+        const response = await fetch("http://localhost:1111/nova-solicitacao", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(inserirManutencao)
