@@ -61,8 +61,8 @@
                                     <i class="fas fa-warehouse"></i>
                                 </div>
                             </div>
-                            <div class="metric-value">R$ 284.5K</div>
-                            <div class="metric-label">Valor Total em Estoque</div>
+                            <div class="employee-metric-value" id="metric-pendentes"></div>
+                            <div class="metric-label">Solicitações Pendentes</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-header">
@@ -70,8 +70,8 @@
                                     <i class="fas fa-exchange-alt"></i>
                                 </div>
                             </div>
-                            <div class="metric-value">3.2x</div>
-                            <div class="metric-label">Giro de Estoque</div>
+                            <div class="employee-metric-value" id="metric-concluidas"></div>
+                            <div class="metric-label">Solicitações Concluídas</div>
                         </div>
                         <div class="metric-card">
                             <div class="metric-header">
@@ -93,21 +93,6 @@
                         </div>
                     </div>
 
-                    <div class="alerts-container">
-                        <h3 style="margin-bottom: 1rem; color: var(--light);">
-                            <i class="fas fa-bell"></i> Alertas do Sistema
-                        </h3>
-                        <div class="alert-item">
-                            <div class="alert-icon">
-                                <i class="fas fa-exclamation-circle"></i>
-                            </div>
-                            <div class="alert-content">
-                                <div class="alert-title">Estoque Crítico</div>
-                                <div class="alert-message">Componentes Eletrônicos abaixo do nível mínimo</div>
-                            </div>
-                            <button class="btn btn-secondary">Resolver</button>
-                        </div>
-                    </div>
 
                     <div class="dashboard-grid">
                         <div class="chart-container">
@@ -268,38 +253,6 @@
 
         // Função para gerar gráficos
         function initializeCharts() {
-            // Gráfico de movimentações por categoria
-            const categoryCtx = document.getElementById('categoryChart');
-            if (categoryCtx) {
-                new Chart(categoryCtx.getContext('2d'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Ferramentas', 'Componentes', 'EPI', 'Mat. Escritório', 'Outros'],
-                        datasets: [{
-                            data: [30, 25, 20, 15, 10],
-                            backgroundColor: [
-                                '#3b82f6',
-                                '#10b981',
-                                '#f59e0b',
-                                '#8b5cf6',
-                                '#ef4444'
-                            ]
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    color: '#e2e8f0',
-                                    padding: 20
-                                }
-                            }
-                        }
-                    }
-                });
-            }
 
             // Gráfico de status do estoque
             const inventoryCtx = document.getElementById('inventoryChart');
