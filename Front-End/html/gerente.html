@@ -409,11 +409,55 @@
             }
         });
 
-        // Configurar botão de gerar PDF
-        document.getElementById('generate-pdf-btn').addEventListener('click', function() {
-            alert('📊 Relatório PDF gerado com sucesso!');
-            // Implemente a geração de PDF aqui
-        });
+     // Versão simplificada para gerar PDF
+document.getElementById('generate-pdf-btn').addEventListener('click', function() {
+    generateSimplePDF();
+});
+
+function generateSimplePDF() {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Título
+        doc.setFontSize(18);
+        doc.text('Relatório do Dashboard', 20, 20);
+        
+        // Data
+        doc.setFontSize(12);
+        doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 20, 30);
+        
+        // Coletar dados
+        const pendentes = document.getElementById('metric-pendentes').textContent || '0';
+        const concluidas = document.getElementById('metric-concluidas').textContent || '0';
+        const entradas = document.getElementById('card-entrada-material').textContent || '0';
+        const saidas = document.getElementById('card-saida-material').textContent || '0';
+        
+        // Adicionar métricas
+        let y = 50;
+        doc.setFontSize(14);
+        doc.text('Métricas:', 20, y);
+        y += 10;
+        
+        doc.setFontSize(12);
+        doc.text(`• Solicitações Pendentes: ${pendentes}`, 25, y);
+        y += 8;
+        doc.text(`• Solicitações Concluídas: ${concluidas}`, 25, y);
+        y += 8;
+        doc.text(`• Entradas Este Mês: ${entradas}`, 25, y);
+        y += 8;
+        doc.text(`• Saídas Este Mês: ${saidas}`, 25, y);
+        
+        // Salvar
+        doc.save(`relatorio_${new Date().getTime()}.pdf`);
+        
+        alert('✅ PDF gerado com sucesso!');
+        
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('❌ Erro ao gerar PDF. Verifique o console.');
+    }
+}
 
         // Inicializar quando o DOM carregar
         document.addEventListener('DOMContentLoaded', function() {
