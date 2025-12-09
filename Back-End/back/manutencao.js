@@ -45,6 +45,8 @@ async function buscarDados() {
 }
 
 function atualizarTabelas(){
+
+    
     const tbody1 = document.getElementById("maintenance-history-body");
     if(!tbody1) return;
     const tbody2 = document.getElementById("maintenance-pending-body");
