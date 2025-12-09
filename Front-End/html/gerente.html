@@ -103,7 +103,11 @@
                             <div class="chart-header">
                                 <h3 class="chart-title">Movimentações por Categoria</h3>
                             </div>
-                            <canvas id="categoryChart" height="250"></canvas>
+                            <canvas id="categoryChart" height="250">
+
+                                <iframe src="../../analise_dados/index.ipynb" frameborder="0"></iframe>
+
+                            </canvas>
                         </div>
                         
                         <div class="chart-container">
@@ -256,61 +260,103 @@
         }
 
         // Função para gerar gráficos
-        function initializeCharts() {
+       async function initializeCharts() {
 
-            // Gráfico de status do estoque
-            const inventoryCtx = document.getElementById('inventoryChart');
-            if (inventoryCtx) {
-                new Chart(inventoryCtx.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: ['Nov','Dez','Jan', 'Fev', 'Mar'],
-                        datasets: [{
-                            label: 'Entradas',
-                            data: [65, 59, 80, 81, 56, 55],
-                            backgroundColor: '#10b981',
-                            borderColor: '#0da271',
-                            borderWidth: 1
-                        }, {
-                            label: 'Saídas',
-                            data: [28, 48, 40, 19, 86, 27],
-                            backgroundColor: '#ef4444',
-                            borderColor: '#dc2626',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    color: '#94a3b8'
-                                },
-                                grid: {
-                                    color: '#334155'
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: '#94a3b8'
-                                },
-                                grid: {
-                                    color: '#334155'
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: '#e2e8f0'
-                                }
-                            }
-                        }
-                    }
-                });
+    // Objeto para armazenar as contagens consolidadas (Ex: {"2025-11": {entradas: 10, saidas: 5}})
+    const contagensMensais = {};
+
+    // Função auxiliar para processar um array de dados
+    const processarDados = (dados, tipoMovimentacao, campoData) => {
+        
+        if (!Array.isArray(dados)) return; // Garante que é um array
+        
+        dados.forEach(item => {
+            const dataString = item[campoData];
+            if (!dataString || dataString.length < 7) return; // Ignora se a data for inválida
+            
+            // Pega o prefixo AAAA-MM (Ex: "2025-11")
+            const mesAno = dataString.substring(0, 7); 
+
+            // Inicializa a contagem para o mês/ano
+            if (!contagensMensais[mesAno]) {
+                contagensMensais[mesAno] = { entradas: 0, saidas: 0 };
             }
+
+            // Incrementa a contagem do tipo específico
+            contagensMensais[mesAno][tipoMovimentacao]++;
+        });
+    };
+
+    try {
+        // --- 1. BUSCA DE DADOS ---
+        const responseEntrada = await fetch("http://localhost:1111/entrada-estoque");
+        const dataEntrada = await responseEntrada.json();
+
+        const responseSaida = await fetch("http://localhost:1111/saida-estoque");
+        const dataSaida = await responseSaida.json();
+        
+        // --- 2. PROCESSAMENTO E CONTAGEM ---
+        
+        // Assumindo chaves de data: 'data_entrada' e 'data_saida'
+        processarDados(dataEntrada, 'entradas', 'data_entrada'); 
+        processarDados(dataSaida, 'saidas', 'data_saida'); 
+        
+        // --- 3. PREPARAÇÃO DOS DADOS PARA O GRÁFICO ---
+        
+        const mesesAnos = Object.keys(contagensMensais).sort();
+        const entradasData = mesesAnos.map(mes => contagensMensais[mes].entradas);
+        const saidasData = mesesAnos.map(mes => contagensMensais[mes].saidas);
+        
+        // Formata os rótulos de "AAAA-MM" para algo mais legível, se necessário (Ex: "Nov 2025")
+        const labelsFormatadas = mesesAnos.map(mesAno => {
+            const [ano, mes] = mesAno.split('-');
+            const dataObj = new Date(ano, mes - 1); // mes - 1 pois o mês em JS começa em 0
+            return dataObj.toLocaleString('pt-BR', { month: 'short', year: 'numeric' });
+        });
+
+        // =========================================================================
+        // --- LOG/LISTAGEM DOS RESULTADOS (Resposta à sua solicitação) ---
+        // =========================================================================
+        
+        console.log("--- Contagem Mensal de Movimentações ---");
+        mesesAnos.forEach(mesAno => {
+            const { entradas, saidas } = contagensMensais[mesAno];
+            console.log(`Mês/Ano: ${mesAno} | Entradas: ${entradas} | Saídas: ${saidas}`);
+        });
+        console.log("---------------------------------------");
+        
+        // --- 4. ATUALIZAÇÃO DO GRÁFICO ---
+        const inventoryCtx = document.getElementById('inventoryChart');
+        if (inventoryCtx) {
+            new Chart(inventoryCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    // Substitui os rótulos estáticos pelos dados processados
+                    labels: labelsFormatadas, 
+                    datasets: [{
+                        label: 'Entradas',
+                        // Substitui os dados estáticos pelos dados processados
+                        data: entradasData, 
+                        backgroundColor: '#10b981',
+                        borderColor: '#0da271',
+                        borderWidth: 1
+                    }, {
+                        label: 'Saídas',
+                        // Substitui os dados estáticos pelos dados processados
+                        data: saidasData,
+                        backgroundColor: '#ef4444',
+                        borderColor: '#dc2626',
+                        borderWidth: 1
+                    }]
+                },
+                // ... (Resto das opções do gráfico) ...
+            });
         }
+
+    } catch (error) {
+        console.error("Erro ao inicializar gráficos ou buscar dados:", error);
+    }
+}
 
         // Configurar logout
         document.getElementById('logout-btn').addEventListener('click', function(e) {
