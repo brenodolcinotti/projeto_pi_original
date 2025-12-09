@@ -137,11 +137,16 @@
                             <div class="chart-header">
                                 <h3 class="chart-title">Movimentações por Categoria</h3>
                             </div>
-                            <canvas id="categoryChart" height="250">
 
-                                <iframe src="../../analise_dados/index.ipynb" frameborder="0"></iframe>
-
-                            </canvas>
+                                <iframe 
+                                    src="http://localhost:8888/edit/index.html" 
+                                    width="100%" 
+                                    height="800px" 
+                                    title="Análise de Dados do Jupyter Notebook"
+                                    frameborder="0"
+                                    sandbox="allow-scripts allow-same-origin" 
+                                >
+                                </iframe>
                         </div>
                         
                         <div class="chart-container">
@@ -368,11 +373,228 @@
             }
         });
 
-        // Configurar botão de gerar PDF
-        document.getElementById('generate-pdf-btn').addEventListener('click', function() {
-            alert('📊 Relatório PDF gerado com sucesso!');
-            // Implemente a geração de PDF aqui
-        });
+     // Versão simplificada para gerar PDF
+document.getElementById('generate-pdf-btn').addEventListener('click', function() {
+    generateSimplePDF();
+});
+
+function generateSimplePDF() {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Título
+        doc.setFontSize(16);
+        doc.setTextColor(124, 58, 237);
+        doc.text('RELATÓRIO DO SISTEMA SLA', 20, 20);
+        
+        // Data
+        doc.setFontSize(10);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 20, 30);
+        
+        let y = 40;
+        
+        // TABELA 1: Métricas dos Cards do Funcionário
+        if (document.querySelector('.employee-metrics')) {
+            doc.setFontSize(12);
+            doc.setTextColor(124, 58, 237);
+            doc.text('1. Métricas do Funcionário', 20, y);
+            y += 10;
+            
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            
+            // Coletar dados
+            const pendentes = document.getElementById('metric-pendentes')?.textContent || '0';
+            const concluidas = document.getElementById('metric-concluidas')?.textContent || '0';
+            const entradas = document.getElementById('card-entrada-material')?.textContent || '0';
+            const saidas = document.getElementById('card-saida-material')?.textContent || '0';
+            
+            doc.text(`Solicitações Pendentes: ${pendentes}`, 25, y);
+            y += 7;
+            doc.text(`Solicitações Concluídas: ${concluidas}`, 25, y);
+            y += 7;
+            doc.text(`Entradas do Mês: ${entradas}`, 25, y);
+            y += 7;
+            doc.text(`Saídas do Mês: ${saidas}`, 25, y);
+            y += 15;
+        }
+        
+        // TABELA 2: Solicitações de Material
+        if (document.querySelector('#employee-section-solicitacoes table')) {
+            if (y > 250) { doc.addPage(); y = 20; }
+            
+            doc.setFontSize(12);
+            doc.setTextColor(124, 58, 237);
+            doc.text('2. Solicitações de Material', 20, y);
+            y += 10;
+            
+            const tabela = document.querySelector('#employee-section-solicitacoes table');
+            if (tabela) {
+                doc.setFontSize(9);
+                doc.setTextColor(0, 0, 0);
+                
+                const linhas = tabela.querySelectorAll('tbody tr');
+                linhas.forEach((linha, index) => {
+                    if (y > 270) { doc.addPage(); y = 20; }
+                    
+                    const cells = linha.querySelectorAll('td');
+                    if (cells.length >= 6) {
+                        const texto = `${cells[0].textContent} | ${cells[2].textContent} | ${cells[3].textContent} | ${cells[5].textContent}`;
+                        doc.text(texto, 25, y);
+                        y += 8;
+                    }
+                });
+                y += 10;
+            }
+        }
+        
+        // TABELA 3: Movimentações
+        if (document.querySelectorAll('#employee-section-movimentacao table')[1]) {
+            if (y > 250) { doc.addPage(); y = 20; }
+            
+            doc.setFontSize(12);
+            doc.setTextColor(124, 58, 237);
+            doc.text('3. Movimentações Recentes', 20, y);
+            y += 10;
+            
+            const tabela = document.querySelectorAll('#employee-section-movimentacao table')[1];
+            if (tabela) {
+                doc.setFontSize(9);
+                doc.setTextColor(0, 0, 0);
+                
+                const linhas = tabela.querySelectorAll('tbody tr');
+                linhas.forEach((linha) => {
+                    if (y > 270) { doc.addPage(); y = 20; }
+                    
+                    const cells = linha.querySelectorAll('td');
+                    if (cells.length >= 5) {
+                        const texto = `${cells[0].textContent} | ${cells[2].textContent} | ${cells[3].textContent}`;
+                        doc.text(texto, 25, y);
+                        y += 8;
+                    }
+                });
+                y += 10;
+            }
+        }
+        
+        // TABELA 4: Manutenções do Sistema de Manutenção
+        if (document.querySelector('#maintenance-dashboard')) {
+            if (y > 250) { doc.addPage(); y = 20; }
+            
+            doc.setFontSize(12);
+            doc.setTextColor(124, 58, 237);
+            doc.text('4. Sistema de Manutenção', 20, y);
+            y += 10;
+            
+            // Métricas de manutenção
+            const pendentesManut = document.getElementById('manutencao-pendente')?.textContent || '0';
+            const concluidasManut = document.getElementById('manutencao-concluida')?.textContent || '0';
+            
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Manutenções Pendentes: ${pendentesManut}`, 25, y);
+            y += 7;
+            doc.text(`Manutenções Concluídas: ${concluidasManut}`, 25, y);
+            y += 15;
+            
+            // Histórico de manutenções
+            if (document.querySelector('#maintenance-history-body')) {
+                doc.setFontSize(11);
+                doc.setTextColor(124, 58, 237);
+                doc.text('Histórico de Manutenções:', 20, y);
+                y += 10;
+                
+                doc.setFontSize(9);
+                doc.setTextColor(0, 0, 0);
+                
+                const tbody = document.querySelector('#maintenance-history-body');
+                const linhas = tbody.querySelectorAll('tr');
+                
+                if (linhas.length === 0) {
+                    doc.text('Nenhuma manutenção concluída', 25, y);
+                    y += 8;
+                } else {
+                    linhas.forEach((linha) => {
+                        if (y > 270) { doc.addPage(); y = 20; }
+                        
+                        const cells = linha.querySelectorAll('td');
+                        if (cells.length >= 7) {
+                            const texto = `ID: ${cells[0].textContent} | ${cells[1].textContent} | ${cells[6].textContent}`;
+                            doc.text(texto, 25, y);
+                            y += 8;
+                        }
+                    });
+                }
+                y += 10;
+            }
+            
+            // Manutenções pendentes
+            if (document.querySelector('#maintenance-pending-body')) {
+                if (y > 250) { doc.addPage(); y = 20; }
+                
+                doc.setFontSize(11);
+                doc.setTextColor(124, 58, 237);
+                doc.text('Manutenções Pendentes:', 20, y);
+                y += 10;
+                
+                doc.setFontSize(9);
+                doc.setTextColor(0, 0, 0);
+                
+                const tbody = document.querySelector('#maintenance-pending-body');
+                const linhas = tbody.querySelectorAll('tr');
+                
+                if (linhas.length === 0) {
+                    doc.text('Nenhuma manutenção pendente', 25, y);
+                    y += 8;
+                } else {
+                    linhas.forEach((linha) => {
+                        if (y > 270) { doc.addPage(); y = 20; }
+                        
+                        const cells = linha.querySelectorAll('td');
+                        if (cells.length >= 7) {
+                            const texto = `ID: ${cells[0].textContent} | ${cells[1].textContent} | ${cells[6].textContent}`;
+                            doc.text(texto, 25, y);
+                            y += 8;
+                        }
+                    });
+                }
+            }
+        }
+        
+        // Rodapé
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text('Sistema SLA - Relatório gerado automaticamente', 105, 285, null, null, 'center');
+        
+        // Salvar PDF
+        const fileName = `relatorio_sla_${new Date().toISOString().slice(0, 10)}.pdf`;
+        doc.save(fileName);
+        
+        // Mensagem simples
+        alert('✅ PDF gerado com sucesso!');
+        
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('❌ Erro ao gerar PDF');
+    }
+}
+
+// Funções auxiliares simples (opcional)
+function getStatusPendentes(valor) {
+    const num = parseInt(valor);
+    if (num === 0) return '✅ OK';
+    if (num < 5) return '⚠️ Baixo';
+    return '🔴 Alto';
+}
+
+function getStatusConcluidas(valor) {
+    const num = parseInt(valor);
+    if (num === 0) return '❌ Nenhuma';
+    if (num < 5) return '⚠️ Poucas';
+    return '✅ Bom';
+}
 
         // Inicializar quando o DOM carregar
         document.addEventListener('DOMContentLoaded', function() {
