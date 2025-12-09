@@ -168,66 +168,33 @@
                                     <th>Ações</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>15/10/2023 14:30</td>
-                                    <td>João Silva</td>
-                                    <td><span class="badge badge-success"><i class="fas fa-arrow-down"></i> Entrada</span></td>
-                                    <td>Ferramentas</td>
-                                    <td>50</td>
-                                    <td>R$ 2.500</td>
-                                    <td><span class="status-badge status-low">Concluído</span></td>
-                                    <td>
-                                        <button class="btn btn-secondary btn-sm">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>15/10/2023 11:15</td>
-                                    <td>Maria Santos</td>
-                                    <td><span class="badge badge-danger"><i class="fas fa-arrow-up"></i> Saída</span></td>
-                                    <td>Componentes Eletrônicos</td>
-                                    <td>25</td>
-                                    <td>R$ 3.750</td>
-                                    <td><span class="status-badge status-high">Pendente</span></td>
-                                    <td>
-                                        <button class="btn btn-secondary btn-sm">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>14/10/2023 16:20</td>
-                                    <td>Carlos Oliveira</td>
-                                    <td><span class="badge badge-success"><i class="fas fa-arrow-down"></i> Entrada</span></td>
-                                    <td>EPIs</td>
-                                    <td>100</td>
-                                    <td>R$ 5.000</td>
-                                    <td><span class="status-badge status-low">Concluído</span></td>
-                                    <td>
-                                        <button class="btn btn-secondary btn-sm">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>14/10/2023 09:45</td>
-                                    <td>Ana Paula</td>
-                                    <td><span class="badge badge-danger"><i class="fas fa-arrow-up"></i> Saída</span></td>
-                                    <td>Materiais de Escritório</td>
-                                    <td>35</td>
-                                    <td>R$ 1.750</td>
-                                    <td><span class="status-badge status-low">Concluído</span></td>
-                                    <td>
-                                        <button class="btn btn-secondary btn-sm">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
+
+                            <tbody id="maintenance-history-body"></tbody>
                         </table>
                     </div>
+
+                    <div class="card manager-card">
+                        <h2 class="card-title manager-title">Pendentes</h2>
+
+                        <table class="advanced-table">
+                            <thead>
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Usuário</th>
+                                    <th>Tipo</th>
+                                    <th>Material</th>
+                                    <th>Quantidade</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="maintenance-pending-body"></tbody>
+                        </table>
+                    </div>
+
+
                 </div>
             </div>
         </div>
@@ -431,6 +398,69 @@
                 console.log('✅ Dashboard do gerente inicializado com sucesso!');
             }
         });
+
+async function carregarSolicitacoes() {
+    try {
+        const response = await fetch("http://localhost:1111/solicitacoes");
+        const solicitacoes = await response.json();
+        atualizarTabelas(solicitacoes);
+
+    } catch (error) {
+        console.error("Erro ao carregar dados do backend:", error);
+    }
+}
+
+function atualizarTabelas(solicitacoes) {
+    const tbody1 = document.getElementById("maintenance-history-body");
+    const tbody2 = document.getElementById("maintenance-pending-body");
+
+    if (tbody1) tbody1.innerHTML = "";
+    if (tbody2) tbody2.innerHTML = "";
+
+    const concluidas = solicitacoes.filter(s => s.status === "CONCLUIDA");
+    const pendentes  = solicitacoes.filter(s => s.status === "PENDENTE");
+
+    // --- Tabela concluídas ---
+    if (tbody1) {
+        concluidas.forEach(s => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${s.data_hora}</td>
+                <td>${s.usuario}</td>
+                <td>${s.tipo}</td>
+                <td>${s.material}</td>
+                <td>${s.quantidade}</td>
+                <td>${s.valor}</td>
+                <td><span class="status-badge status-low">${s.status}</span></td>
+                <td><button class="btn-ver">Ver</button></td>
+            `;
+            tbody1.appendChild(row);
+        });
+    }
+
+    // --- Tabela pendentes ---
+    if (tbody2) {
+        pendentes.forEach(s => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${s.data_hora}</td>
+                <td>${s.usuario}</td>
+                <td>${s.tipo}</td>
+                <td>${s.material}</td>
+                <td>${s.quantidade}</td>
+                <td>${s.valor}</td>
+                <td><span class="status-badge status-warning">${s.status}</span></td>
+                <td><button class="btn-aprovar">Aprovar</button></td>
+            `;
+            tbody2.appendChild(row);
+        });
+    }
+}
+
+// Atualiza ao carregar a página
+carregarSolicitacoes();
+
+
     </script>
         <script src="../../Back-End/back/deposit.js"></script>
 </body>
