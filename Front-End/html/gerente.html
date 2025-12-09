@@ -96,6 +96,40 @@
                             <div class="metric-label">Saídas Este Mês</div>
                         </div>
                     </div>
+                    
+                    <style>
+/* APENAS A COR DOS VALORES NUMÉRICOS DOS CARDS */
+.employee-metric-value {
+    color: #7c3aed !important;
+}
+
+/* Se quiser usar o gradiente no texto dos números */
+.employee-metric-value {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    color: transparent !important;
+}
+
+/* Para garantir que também pegue os valores no dashboard do gerente */
+#metric-pendentes,
+#metric-concluidas,
+#card-entrada-material, 
+#card-saida-material {
+    color: #7c3aed !important;
+}
+
+/* Ou com gradiente */
+#metric-pendentes,
+#metric-concluidas,
+#card-entrada-material, 
+#card-saida-material {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    color: transparent !important;
+}
+</style>
 
 
                     <div class="dashboard-grid">
